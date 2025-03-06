@@ -497,6 +497,8 @@ static ssize_t do_write(FILE *stream, const void *ptr, size_t count) {
 
     if (stream->__buf_cur == stream->__buf_end && do_flush(stream)) return -1;
 
+    bool was_clean = stream->__buf_cur == stream->__buf_start;
+
     size_t cur = stream->__buf_end - stream->__buf_cur;
     if (cur > count) cur = count;
     if (cur > SSIZE_MAX) cur = SSIZE_MAX;
@@ -519,6 +521,13 @@ static ssize_t do_write(FILE *stream, const void *ptr, size_t count) {
     memcpy(stream->__buf_cur, ptr, cur);
     stream->__buf_cur += cur;
     stream->__buf_write = true;
+
+    if (was_clean) {
+        stream->__prev = NULL;
+        stream->__next = dirty_streams;
+        if (dirty_streams) dirty_streams->__prev = stream;
+        dirty_streams = stream;
+    }
 
     if (flush_after) {
         // ignore errors here, since if the backing write fails it'll still be in the buffer
