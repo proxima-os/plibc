@@ -9,7 +9,7 @@
 #include <sys/auxv.h>
 #include <unistd.h>
 
-EXPORT char **environ;
+char **environ;
 
 static FILE *open_std_stream(int fd, const char *mode) {
     FILE *f = fdopen(fd, mode);
@@ -21,7 +21,7 @@ static FILE *open_std_stream(int fd, const char *mode) {
     return f;
 }
 
-__attribute__((used)) EXPORT _Noreturn void __plibc_start(
+__attribute__((used)) _Noreturn void __plibc_main(
         void **stack,
         int (*main)(int, char **, char **),
         void (*exitfn)(void)
@@ -33,7 +33,7 @@ __attribute__((used)) EXPORT _Noreturn void __plibc_start(
     {
         char **cur = environ;
         while (*cur) cur++;
-        auxv = (void *)&cur[1];
+        __plibc_auxv = (void *)&cur[1];
     }
 
     {
@@ -41,7 +41,7 @@ __attribute__((used)) EXPORT _Noreturn void __plibc_start(
 
         if (addr) {
             hydrogen_init_info_t *info = (hydrogen_init_info_t *)addr;
-            log_handle = info->log_handle;
+            __plibc_log_handle = info->log_handle;
         }
     }
 

@@ -21,12 +21,18 @@ subdir('crt')
 subdir('libc')
 subdir('rtld')
 
+libc_static = static_library(
+    'c',
+    install: true,
+    link_whole: [libc_common, rtld_static],
+)
+
 libc_shared = shared_library(
     'c',
     dependencies: hydrogen,
-    gnu_symbol_visibility: 'hidden',
     install: true,
-    link_whole: libc_static,
+    link_whole: libc_common,
+    link_with: rtld_shared,
 )
 
 subdir('dummy')

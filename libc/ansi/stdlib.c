@@ -283,7 +283,7 @@ EXPORT int atexit(void (*func)(void)) {
 
 EXPORT void exit(int status) {
     __cxa_finalize(NULL);
-    flush_all_streams();
+    __plibc_flush_dirty_streams();
     _exit(status);
 }
 

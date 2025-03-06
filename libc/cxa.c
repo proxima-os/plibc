@@ -10,7 +10,7 @@ struct atexit {
 
 static struct atexit *atexits;
 
-EXPORT int __cxa_atexit(void (*func)(void *), void *priv, void *dso) {
+int __cxa_atexit(void (*func)(void *), void *priv, void *dso) {
     struct atexit *cur = malloc(sizeof(*cur));
     if (unlikely(!cur)) return -1;
 
@@ -24,7 +24,7 @@ EXPORT int __cxa_atexit(void (*func)(void *), void *priv, void *dso) {
     return 0;
 }
 
-EXPORT void __cxa_finalize(void *dso) {
+void __cxa_finalize(void *dso) {
     struct atexit *prev = NULL;
     struct atexit *cur = atexits;
 

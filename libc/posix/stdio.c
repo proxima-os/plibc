@@ -18,8 +18,8 @@ EXPORT int fileno(FILE *stream) {
 }
 
 EXPORT FILE *fdopen(int fildes, const char *type) {
-    int flags = mode_to_open(type);
+    int flags = __plibc_mode_to_open(type);
     if (unlikely(flags < 0)) return NULL;
 
-    return open_from_fd(fildes, flags);
+    return __plibc_open_from_fd(fildes, flags);
 }

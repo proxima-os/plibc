@@ -8,7 +8,7 @@
 #include <limits.h>
 #include <sys/types.h>
 
-hydrogen_handle_t log_handle;
+hydrogen_handle_t __plibc_log_handle;
 
 EXPORT pid_t fork(void) {
     STUB();
@@ -222,8 +222,8 @@ EXPORT ssize_t write(int fildes, const void *buf, size_t nbyte) {
 
     // TODO
 
-    if ((fildes == STDOUT_FILENO || fildes == STDERR_FILENO) && log_handle) {
-        int error = hydrogen_log_write(log_handle, buf, nbyte);
+    if ((fildes == STDOUT_FILENO || fildes == STDERR_FILENO) && __plibc_log_handle) {
+        int error = hydrogen_log_write(__plibc_log_handle, buf, nbyte);
 
         if (unlikely(error)) {
             errno = error;

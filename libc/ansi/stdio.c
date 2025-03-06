@@ -168,7 +168,7 @@ EXPORT int fflush(FILE *stream) {
     return ret;
 }
 
-int mode_to_open(const char *mode) {
+int __plibc_mode_to_open(const char *mode) {
     int flags;
 
     switch (*mode++) {
@@ -190,7 +190,7 @@ int mode_to_open(const char *mode) {
     return flags;
 }
 
-FILE *open_from_fd(int fd, int flags) {
+FILE *__plibc_open_from_fd(int fd, int flags) {
     FILE *stream = malloc(sizeof(*stream));
     if (unlikely(!stream)) return NULL;
 
@@ -212,13 +212,13 @@ FILE *open_from_fd(int fd, int flags) {
 }
 
 EXPORT FILE *fopen(const char *restrict filename, const char *restrict mode) {
-    int flags = mode_to_open(mode);
+    int flags = __plibc_mode_to_open(mode);
     if (unlikely(flags < 0)) return NULL;
 
     int fd = open(filename, flags, CREATION_MODE);
     if (unlikely(fd < 0)) return NULL;
 
-    FILE *stream = open_from_fd(fd, flags);
+    FILE *stream = __plibc_open_from_fd(fd, flags);
     if (unlikely(!stream)) {
         int error = errno;
         close(fd);
@@ -233,7 +233,7 @@ EXPORT FILE *freopen(const char *restrict filename, const char *restrict mode, F
     do_flush(stream);
     mark_clean(stream);
 
-    int flags = mode_to_open(mode);
+    int flags = __plibc_mode_to_open(mode);
     if (unlikely(flags < 0)) goto close_cleanup;
 
     if (filename) {
@@ -316,7 +316,7 @@ EXPORT int setvbuf(FILE *restrict stream, char *restrict buf, int mode, size_t s
     return 0;
 }
 
-void flush_all_streams(void) {
+void __plibc_flush_dirty_streams(void) {
     FILE *cur = dirty_streams;
 
     while (cur) {

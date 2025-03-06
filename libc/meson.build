@@ -220,8 +220,8 @@ math = static_library(
     include_directories: inc,
 )
 
-libc_static = static_library(
-    'c',
+libc_common = static_library(
+    'common',
     'ansi/assert.c',
     'ansi/ctype.c',
     'ansi/errno.c',
@@ -255,9 +255,10 @@ libc_static = static_library(
     'auxv.c',
     'cxa.c',
     'start.c',
+    'start.S',
+    build_by_default: false,
     c_args: ['-ffat-lto-objects', '-ffreestanding'],
     gnu_symbol_visibility: 'hidden',
     include_directories: inc,
-    install: true,
     link_whole: math,
 )
