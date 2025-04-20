@@ -4,7 +4,7 @@
 
 static uintptr_t *auxv;
 
-__attribute__((constructor)) static void init_auxv(UNUSED int argc, UNUSED char **argv, char **envp) {
+LIBINIT static void init_auxv(UNUSED int argc, UNUSED char **argv, char **envp) {
     while (envp[0]) envp++;
     auxv = (uintptr_t *)&envp[1];
 }

@@ -2,6 +2,16 @@
 #include <hydrogen/log.h>
 #include <sys/auxv.h>
 
+__attribute__((constructor)) static void ctor_test(void) {
+    hydrogen_init_info_t *init = (hydrogen_init_info_t *)getauxval(HYDROGEN_AT_INIT_INFO);
+    hydrogen_log_write(init->log_handle, "ctor!\n", 6);
+}
+
+__attribute__((destructor)) static void dtor_test(void) {
+    hydrogen_init_info_t *init = (hydrogen_init_info_t *)getauxval(HYDROGEN_AT_INIT_INFO);
+    hydrogen_log_write(init->log_handle, "dtor!\n", 6);
+}
+
 int main() {
     hydrogen_init_info_t *init = (hydrogen_init_info_t *)getauxval(HYDROGEN_AT_INIT_INFO);
     hydrogen_log_write(init->log_handle, "Hello!\n", 7);

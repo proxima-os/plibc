@@ -1,4 +1,5 @@
 #include "compiler.h"
+#include "rtld.h"
 #include <elf.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -421,17 +422,7 @@ static void do_finifns(object_t *obj) {
     if (obj->fini) obj->fini(argc, argv, envp);
 }
 
-static void (*orig_exitfn)(void);
-
-static void fini_exitfn(void) {
-    for (size_t i = 0; i < ndgraph; i++) {
-        do_finifns(dgraph[i]);
-    }
-
-    if (orig_exitfn) orig_exitfn();
-}
-
-EXPORT void (*__plibc_rtld_init(uintptr_t *stack, Elf64_Dyn *dynamic, void (*exitfn)(void), uintptr_t *got))(void) {
+EXPORT void __plibc_rtld_init(uintptr_t *stack, Elf64_Dyn *dynamic, uintptr_t *got) {
     argc = stack[0];
     argv = (char **)&stack[1];
     stack = &stack[argc + 2]; // 1 for argc itself, 1 for the null terminator
@@ -479,7 +470,10 @@ EXPORT void (*__plibc_rtld_init(uintptr_t *stack, Elf64_Dyn *dynamic, void (*exi
     for (size_t i = ndgraph; i > 0; i--) {
         do_initfns(dgraph[i - 1]);
     }
+}
 
-    orig_exitfn = exitfn;
-    return fini_exitfn;
+EXPORT void __plibc_rtld_run_fini(void) {
+    for (size_t i = 0; i < ndgraph; i++) {
+        do_finifns(dgraph[i]);
+    }
 }
