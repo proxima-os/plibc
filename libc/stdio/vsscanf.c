@@ -17,7 +17,7 @@ static int vsscanf_get(struct vsscanf_ctx *ctx) {
     return SCANF_EOF;
 }
 
-static void vsscanf_put(int value, struct vsscanf_ctx *ctx) {
+static void vsscanf_put(UNUSED int value, struct vsscanf_ctx *ctx) {
     ctx->buf--;
     assert((unsigned char)*ctx->buf == value);
 }
