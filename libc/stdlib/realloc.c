@@ -33,7 +33,22 @@ EXPORT void *realloc(void *ptr, size_t size) {
                         NULL,
                         0
                 );
-                if (ret.error) goto copy;
+
+                if (ret.error) {
+                    ret = hydrogen_vm_move(NULL, (uintptr_t)meta, align_old, NULL, 0, align_new);
+                    if (ret.error) goto copy;
+
+                    meta = ret.pointer;
+                    ptr = ret.pointer + ALLOC_META_OFFSET;
+
+                    int error = hydrogen_vm_remap(
+                            NULL,
+                            (uintptr_t)meta + align_old,
+                            align_new - align_old,
+                            HYDROGEN_MEM_READ | HYDROGEN_MEM_WRITE
+                    );
+                    if (error) goto copy;
+                }
             }
 
             meta->size = size;
