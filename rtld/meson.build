@@ -17,6 +17,7 @@ rtld_shared = shared_library(
     '../libc/start-static.S',
     'main.c',
     dependencies: hydrogen,
+    include_directories: inc,
     install: true,
     link_args: ['-Wl,--version-script=' + script.full_path(), '-Wl,-z,text'],
     link_depends: script,
