@@ -2,6 +2,7 @@
 #include "stdlib.h"
 #include "stdlib.p.h"
 #include <hydrogen/memory.h>
+#include <hydrogen/types.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -24,16 +25,15 @@ EXPORT void *realloc(void *ptr, size_t size) {
             if (align_new < align_old) {
                 hydrogen_vm_unmap(NULL, (uintptr_t)meta + align_new, align_old - align_new);
             } else if (align_new > align_old) {
-                uintptr_t addr = (uintptr_t)meta + align_old;
-                int error = hydrogen_vm_map(
+                hydrogen_ret_t ret = hydrogen_vm_map(
                         NULL,
-                        &addr,
+                        (uintptr_t)meta + align_old,
                         align_new - align_old,
                         HYDROGEN_MEM_READ | HYDROGEN_MEM_WRITE | HYDROGEN_MEM_EXACT,
                         NULL,
                         0
                 );
-                if (error) goto copy;
+                if (ret.error) goto copy;
             }
 
             meta->size = size;

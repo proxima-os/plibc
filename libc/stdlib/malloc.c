@@ -3,6 +3,7 @@
 #include "stdlib.p.h"
 #include <errno.h> /* IWYU pragma: keep */
 #include <hydrogen/memory.h>
+#include <hydrogen/types.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -13,13 +14,13 @@ EXPORT void *malloc(size_t size) {
     alloc_meta_t *meta;
 
     if (size >= ALLOC_HUGE) {
-        uintptr_t addr = 0;
-        int error = hydrogen_vm_map(NULL, &addr, HUGE_ALIGN(size), HYDROGEN_MEM_READ | HYDROGEN_MEM_WRITE, NULL, 0);
-        if (error) {
-            errno = error;
+        hydrogen_ret_t
+                ret = hydrogen_vm_map(NULL, 0, HUGE_ALIGN(size), HYDROGEN_MEM_READ | HYDROGEN_MEM_WRITE, NULL, 0);
+        if (ret.error) {
+            errno = ret.error;
             return NULL;
         }
-        meta = (void *)addr;
+        meta = ret.pointer;
     } else {
         if (size < MIN_ALLOC_SIZE) size = MIN_ALLOC_SIZE;
 
@@ -29,13 +30,12 @@ EXPORT void *malloc(size_t size) {
         if (obj) {
             alloc_free[bucket] = obj->next;
         } else {
-            uintptr_t addr = 0;
-            int error = hydrogen_vm_map(NULL, &addr, ALLOC_HUGE, HYDROGEN_MEM_READ | HYDROGEN_MEM_WRITE, NULL, 0);
-            if (error) {
-                errno = error;
+            hydrogen_ret_t ret = hydrogen_vm_map(NULL, 0, ALLOC_HUGE, HYDROGEN_MEM_READ | HYDROGEN_MEM_WRITE, NULL, 0);
+            if (ret.error) {
+                errno = ret.error;
                 return NULL;
             }
-            obj = (void *)addr;
+            obj = (void *)ret.pointer;
 
             if (bucket != MAX_BUCKET) {
                 size_t obj_size = 1ul << bucket;
