@@ -4,7 +4,7 @@
 #include <errno.h>
 
 EXPORT void (*signal(int sig, void (*func)(int)))(int) {
-    if (sig == 0 || sig >= NUM_SIGNALS) {
+    if (sig <= 0 || sig >= NUM_SIGNALS) {
         errno = EINVAL;
         return SIG_ERR;
     }

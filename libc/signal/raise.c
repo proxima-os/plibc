@@ -5,7 +5,7 @@
 #include <hydrogen/thread.h>
 
 EXPORT int raise(int sig) {
-    if (sig == 0 || sig >= NUM_SIGNALS) {
+    if (sig <= 0 || sig >= NUM_SIGNALS) {
         errno = EINVAL;
         return -1;
     }
