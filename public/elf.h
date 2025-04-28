@@ -7,6 +7,8 @@
 extern "C" {
 #endif
 
+/* Misc */
+
 typedef uint16_t Elf64_Half;
 typedef uint32_t Elf64_Word;
 typedef int64_t Elf64_Sxword;

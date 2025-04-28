@@ -89,7 +89,7 @@ static bool visit_deps(object_t *obj, bool (*handler)(object_t *, void *), void 
     return do_visit(obj, handler, ctx, visits++);
 }
 
-static int strncmp(const char *s1, const char *s2, size_t n) {
+static int compare_string_prefix(const char *s1, const char *s2, size_t n) {
     while (n--) {
         unsigned char c1 = *s1++;
         unsigned char c2 = *s2++;
@@ -102,8 +102,8 @@ static int strncmp(const char *s1, const char *s2, size_t n) {
     return 0;
 }
 
-static int strcmp(const char *s1, const char *s2) {
-    return strncmp(s1, s2, -1);
+static int compare_string(const char *s1, const char *s2) {
+    return compare_string_prefix(s1, s2, -1);
 }
 
 static uint32_t elf_hash(const char *name) {
@@ -142,7 +142,7 @@ static const Elf64_Sym *resolve_within(object_t *obj, const char *name) {
         if (candidate->st_shndx != STN_UNDEF || candidate->st_value != 0) {
             const char *candidate_name = obj->strtab + candidate->st_name;
 
-            if (!strcmp(name, candidate_name)) return candidate;
+            if (!compare_string(name, candidate_name)) return candidate;
         }
 
         idx = obj->sym_ht->data[obj->sym_ht->nbucket + idx];
@@ -151,40 +151,12 @@ static const Elf64_Sym *resolve_within(object_t *obj, const char *name) {
     return NULL;
 }
 
-struct resolve_symbolic_ctx {
-    const char *name;
-    object_t **obj;
-    const Elf64_Sym **sym;
-    bool *have_weak;
-};
-
-static bool resolve_symbolic_func(object_t *obj, void *ptr) {
-    struct resolve_symbolic_ctx *ctx = ptr;
-    const Elf64_Sym *sym = resolve_within(obj, ctx->name);
-    if (!sym) return true;
-
-    *ctx->obj = obj;
-    *ctx->sym = sym;
-
-    if (ELF64_ST_BIND(sym->st_info) == STB_WEAK) {
-        *ctx->have_weak = true;
-        return true;
-    }
-
-    return false;
-}
-
 static void resolve_symbol(object_t **obj, const Elf64_Sym **sym) {
     object_t *src = *obj;
     const Elf64_Sym *cur = *sym;
     bool have_weak = ELF64_ST_BIND(cur->st_info) == STB_WEAK;
-    if (!have_weak && (cur->st_shndx != SHN_UNDEF || cur->st_value != 0)) return;
+    if (src->symbolic && !have_weak && (cur->st_shndx != SHN_UNDEF || cur->st_value != 0)) return;
     const char *name = src->strtab + cur->st_name;
-
-    if (src->symbolic) {
-        struct resolve_symbolic_ctx ctx = {name, obj, sym, &have_weak};
-        if (!visit_deps(src, resolve_symbolic_func, &ctx)) return;
-    }
 
     for (size_t i = 0; i < ndgraph; i++) {
         object_t *ocur = dgraph[i];
@@ -358,7 +330,7 @@ static object_t *setup_from_dynamic(uintptr_t slide, Elf64_Dyn *dynamic) {
 
                 size_t i;
                 for (i = 0; i < num_objects; i++) {
-                    if (objects[i].name && !strcmp(objects[i].name, name)) break;
+                    if (objects[i].name && !compare_string(objects[i].name, name)) break;
                 }
 
                 // can't resolve non-vdso dependencies during self-relocation
@@ -432,7 +404,7 @@ EXPORT void __plibc_rtld_init(uintptr_t *stack, Elf64_Dyn *dynamic, uintptr_t *g
         const char *str = (const char *)*stack++;
         if (!str) break;
 
-        if (strncmp(str, "LD_BIND_NOW=", 12) && str[12] != 0) {
+        if (compare_string_prefix(str, "LD_BIND_NOW=", 12) && str[12] != 0) {
             force_bind_now = true;
             phase_mask |= 1 << PHASE_BIND;
         }

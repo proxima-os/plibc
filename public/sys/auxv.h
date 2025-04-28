@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+/* Misc */
+
 #define AT_NULL 0
 #define AT_SYSINFO_EHDR 33
 

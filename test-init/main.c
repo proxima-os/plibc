@@ -1,5 +1,6 @@
 #include <hydrogen/init.h>
 #include <hydrogen/log.h>
+#include <stdio.h>
 #include <sys/auxv.h>
 
 __attribute__((constructor)) static void ctor_test(void) {
@@ -12,8 +13,7 @@ __attribute__((destructor)) static void dtor_test(void) {
     hydrogen_log_write(init->log_handle, "dtor!\n", 6);
 }
 
-int main() {
-    hydrogen_init_info_t *init = (hydrogen_init_info_t *)getauxval(HYDROGEN_AT_INIT_INFO);
-    hydrogen_log_write(init->log_handle, "Hello!\n", 7);
+int main(int argc, char *argv[]) {
+    printf("Hello from test-init! argc = %d, argv[0] = %s\n", argc, argv[0]);
     return 0;
 }

@@ -1,16 +1,12 @@
 #include "compiler.h"
 #include "sys/auxv.h"
+#include "sys/auxv.p.h"
 #include <stdint.h>
 
-static uintptr_t *auxv;
-
-LIBINIT static void init_auxv(UNUSED int argc, UNUSED char **argv, char **envp) {
-    while (envp[0]) envp++;
-    auxv = (uintptr_t *)&envp[1];
-}
+uintptr_t *auxv_data;
 
 EXPORT unsigned long getauxval(unsigned long type) {
-    uintptr_t *cur = auxv;
+    uintptr_t *cur = auxv_data;
 
     for (;;) {
         uintptr_t typ = cur[0];
