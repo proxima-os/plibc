@@ -4,8 +4,8 @@
 #include <stdio.h>
 
 EXPORT char *asctime(const struct tm *timeptr) {
-    static char wday_name[7][3] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
-    static char mon_name[12][3] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+    NONSTRING static char wday_name[7][3] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+    NONSTRING static char mon_name[12][3] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     static char result[32];
 
     snprintf(
