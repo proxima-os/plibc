@@ -1,11 +1,11 @@
 #ifndef _MATH_H
 #define _MATH_H 1
 
+#include <bits/features.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* C90 */
 
 #define HUGE_VAL (__builtin_huge_val())
 
@@ -32,7 +32,7 @@ double sqrt(double __x);
 double tan(double __x);
 double tanh(double __x);
 
-/* Misc */
+#if defined(_PROXIMA_SOURCE)
 
 #define isinf __builtin_isinf
 #define isnan __builtin_isnan
@@ -41,6 +41,8 @@ typedef double double_t;
 
 double expm1(double __x);
 double scalbn(double __x, int __n);
+
+#endif /* defined(_PROXIMA_SOURCE) */
 
 #ifdef __cplusplus
 };

@@ -11,7 +11,7 @@ project(
 compiler = meson.get_compiler('c')
 hydrogen = compiler.find_library('hydrogen')
 
-add_project_arguments('-D__PLIBC_BUILDING_PLIBC', language: 'c')
+add_project_arguments('-D__PLIBC_BUILDING_PLIBC', '-D_PROXIMA_SOURCE', language: 'c')
 add_project_link_arguments('-nostdlib', '-Wl,-Bsymbolic', language: 'c')
 
 inc = [include_directories('public', is_system: true), include_directories('private')]

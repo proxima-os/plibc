@@ -1,11 +1,11 @@
 #ifndef _SIGNAL_H
 #define _SIGNAL_H 1
 
+#include <bits/features.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* C90 */
 
 #define SIG_DFL ((void(*)(int))0)
 #define SIG_ERR ((void(*)(int))-1)

@@ -1,6 +1,8 @@
 #ifndef _STRING_H
 #define _STRING_H 1
 
+#include <bits/features.h>
+
 #define __need_NULL
 #define __need_size_t
 #include <stddef.h>
@@ -8,8 +10,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* C90 */
 
 void *memcpy(void *__restrict __s1, const void *__restrict __s2, size_t __n);
 void *memmove(void *__s1, const void *__s2, size_t __n);

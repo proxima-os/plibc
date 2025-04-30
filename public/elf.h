@@ -1,13 +1,16 @@
 #ifndef _ELF_H
 #define _ELF_H 1
 
+#include <bits/features.h>
 #include <stdint.h>
+
+#ifndef _PROXIMA_SOURCE
+#error "elf.h requires _PROXIMA_SOURCE"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* Misc */
 
 typedef uint16_t Elf64_Half;
 typedef uint32_t Elf64_Word;

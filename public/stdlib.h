@@ -1,6 +1,8 @@
 #ifndef _STDLIB_H
 #define _STDLIB_H 1
 
+#include <bits/features.h>
+
 #define __need_NULL
 #define __need_size_t
 #define __need_wchar_t
@@ -9,8 +11,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* C90 */
 
 typedef struct {
     int quot;

@@ -1,6 +1,8 @@
 #ifndef _TIME_H
 #define _TIME_H 1
 
+#include <bits/features.h>
+
 #define __need_NULL
 #define __need_size_t
 #include <stddef.h>
@@ -8,8 +10,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* C90 */
 
 #define CLOCKS_PER_SEC 1000000
 

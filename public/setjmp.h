@@ -1,11 +1,11 @@
 #ifndef _SETJMP_H
 #define _SETJMP_H
 
+#include <bits/features.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* C90 */
 
 #define setjmp setjmp
 

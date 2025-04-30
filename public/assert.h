@@ -1,11 +1,11 @@
 #ifndef _ASSERT_H
 #define _ASSERT_H 1
 
+#include <bits/features.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* C90 */
 
 #ifndef NDEBUG
 __attribute__((__noreturn__)) extern void __plibc_assert_fail(

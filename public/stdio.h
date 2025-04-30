@@ -1,6 +1,8 @@
 #ifndef _STDIO_H
 #define _STDIO_H 1
 
+#include <bits/features.h>
+
 #define __need___va_list
 #include <stdarg.h>
 
@@ -11,8 +13,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* C90 */
 
 #define _IOFBF 0
 #define _IOLBF 1

@@ -1,11 +1,11 @@
 #ifndef _CTYPE_H
 #define _CTYPE_H 1
 
+#include <bits/features.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* C90 */
 
 int isalnum(int __c);
 int isalpha(int __c);

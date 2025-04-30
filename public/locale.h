@@ -1,14 +1,14 @@
 #ifndef _LOCALE_H
 #define _LOCALE_H 1
 
+#include <bits/features.h>
+
 #define __need_NULL
 #include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* C90 */
 
 #define LC_ALL 0
 #define LC_COLLATE 1
