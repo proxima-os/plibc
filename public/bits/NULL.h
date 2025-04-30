@@ -1,3 +1,4 @@
+/* IWYU pragma: private, include "stddef.h" */
 #ifndef _BITS_NULL_H
 #define _BITS_NULL_H
 
