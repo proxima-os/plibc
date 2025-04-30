@@ -2,7 +2,7 @@
 #include "stdlib.h"
 #include <errno.h>
 
-EXPORT int system(UNUSED const char *string) {
+EXPORT int system(const char *string) {
     errno = ENOENT;
     return -1;
 }

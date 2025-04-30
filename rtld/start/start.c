@@ -362,7 +362,7 @@ static void setup_vdso(uintptr_t addr) {
     setup_from_dynamic(slide, (Elf64_Dyn *)(dynamic + slide));
 }
 
-static bool build_dgraph_func(object_t *obj, UNUSED void *ctx) {
+static bool build_dgraph_func(object_t *obj, void *ctx) {
     dgraph[ndgraph++] = obj;
     if (obj->bind_now) phase_mask |= 1 << PHASE_BIND;
     return true;

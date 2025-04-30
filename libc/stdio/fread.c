@@ -5,7 +5,7 @@
 #include <errno.h>
 #include <string.h>
 
-static ssize_t read(UNUSED int fd, UNUSED void *buf, UNUSED ssize_t count) {
+static ssize_t read(int fd, void *buf, ssize_t count) {
     errno = EBADF;
     return -1;
 }

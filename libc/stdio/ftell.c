@@ -2,7 +2,7 @@
 #include "stdio.h"
 #include <errno.h>
 
-EXPORT long ftell(UNUSED FILE *stream) {
+EXPORT long ftell(FILE *stream) {
     errno = ESPIPE;
     return -1;
 }

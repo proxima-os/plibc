@@ -2,7 +2,7 @@
 #include "stdio.h"
 #include <errno.h>
 
-EXPORT FILE *fopen(UNUSED const char *filename, UNUSED const char *mode) {
+EXPORT FILE *fopen(const char *filename, const char *mode) {
     errno = ENOENT;
     return NULL;
 }

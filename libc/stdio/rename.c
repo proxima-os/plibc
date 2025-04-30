@@ -2,7 +2,7 @@
 #include "stdio.h"
 #include <errno.h>
 
-EXPORT int rename(UNUSED const char *old, UNUSED const char *new) {
+EXPORT int rename(const char *old, const char *new) {
     errno = ENOENT;
     return -1;
 }

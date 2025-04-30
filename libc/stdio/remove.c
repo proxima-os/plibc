@@ -2,7 +2,7 @@
 #include "stdio.h"
 #include <errno.h>
 
-EXPORT int remove(UNUSED const char *filename) {
+EXPORT int remove(const char *filename) {
     errno = ENOENT;
     return -1;
 }

@@ -3,7 +3,7 @@
 #include "stdio.p.h"
 #include <errno.h>
 
-EXPORT FILE *freopen(UNUSED const char *filename, UNUSED const char *mode, FILE *stream) {
+EXPORT FILE *freopen(const char *filename, const char *mode, FILE *stream) {
     do_close(stream);
 
     errno = ENOENT;
