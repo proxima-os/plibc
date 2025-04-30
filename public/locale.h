@@ -1,10 +1,8 @@
 #ifndef _LOCALE_H
 #define _LOCALE_H 1
 
+#include <bits/NULL.h>
 #include <bits/features.h>
-
-#define __need_NULL
-#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {

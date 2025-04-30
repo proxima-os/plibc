@@ -1,4 +1,9 @@
 install_headers(
+    'bits/features.h',
+    'bits/NULL.h',
+    'bits/size_t.h',
+    'bits/types.h',
+    'bits/wchar_t.h',
     'sys/auxv.h',
     'assert.h',
     'ctype.h',

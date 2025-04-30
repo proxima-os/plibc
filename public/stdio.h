@@ -1,14 +1,10 @@
 #ifndef _STDIO_H
 #define _STDIO_H 1
 
+#include <bits/NULL.h>
 #include <bits/features.h>
-
-#define __need___va_list
-#include <stdarg.h>
-
-#define __need_NULL
-#define __need_size_t
-#include <stddef.h>
+#include <bits/size_t.h>
+#include <bits/types.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -89,13 +85,13 @@ __attribute__((__format__(__scanf__, 2, 3))) int sscanf(
 __attribute__((__format__(__printf__, 2, 0))) int vfprintf(
         FILE *__restrict __stream,
         const char *__restrict __format,
-        __gnuc_va_list __arg
+        __va_list __arg
 );
-__attribute__((__format__(__printf__, 1, 0))) int vprintf(const char *__restrict __format, __gnuc_va_list __arg);
+__attribute__((__format__(__printf__, 1, 0))) int vprintf(const char *__restrict __format, __va_list __arg);
 __attribute__((__format__(__printf__, 2, 0))) int vsprintf(
         char *__restrict __s,
         const char *__restrict __format,
-        __gnuc_va_list __arg
+        __va_list __arg
 );
 int fgetc(FILE *__stream);
 char *fgets(char *__restrict __s, int __n, FILE *__restrict __stream);

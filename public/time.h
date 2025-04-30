@@ -1,11 +1,9 @@
 #ifndef _TIME_H
 #define _TIME_H 1
 
+#include <bits/NULL.h>
 #include <bits/features.h>
-
-#define __need_NULL
-#define __need_size_t
-#include <stddef.h>
+#include <bits/size_t.h>
 
 #ifdef __cplusplus
 extern "C" {

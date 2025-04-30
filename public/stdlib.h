@@ -1,12 +1,10 @@
 #ifndef _STDLIB_H
 #define _STDLIB_H 1
 
+#include <bits/NULL.h>
 #include <bits/features.h>
-
-#define __need_NULL
-#define __need_size_t
-#define __need_wchar_t
-#include <stddef.h>
+#include <bits/size_t.h>
+#include <bits/wchar_t.h>
 
 #ifdef __cplusplus
 extern "C" {
