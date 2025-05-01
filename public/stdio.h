@@ -5,6 +5,7 @@
 #include <bits/features.h>
 #include <bits/size_t.h>
 #include <bits/types.h>
+#include <bits/seek.h> /* IWYU pragma: export */
 
 #ifdef __cplusplus
 extern "C" {
@@ -20,10 +21,6 @@ extern "C" {
 #define FILENAME_MAX 4096
 #define L_tmpnam 20 /* /tmp/tmp.XXXXXXXXXX is 19 chars */
 #define TMP_MAX 0x200000
-
-#define SEEK_SET 0
-#define SEEK_CUR 1
-#define SEEK_END 2
 
 #define stderr stderr
 #define stdin stdin
@@ -44,10 +41,12 @@ typedef struct _FILE {
     unsigned __own : 1; /* is the buffer managed by libc? */
     unsigned __lbf : 1; /* is the stream line-buffered? */
     unsigned __rbf : 1; /* does the buffer contain read data? */
+    unsigned __fd_read : 1;
+    unsigned __fd_write : 1;
 } FILE;
 
 typedef struct {
-    unsigned long long __pos;
+    __off_t __pos;
 } fpos_t;
 
 extern FILE *stderr;
@@ -115,6 +114,16 @@ void clearerr(FILE *__stream);
 int feof(FILE *__stream);
 int ferror(FILE *__stream);
 void perror(const char *__s);
+
+#if _POSIX_C_SOURCE >= 1
+
+#define L_ctermid 9 /* /dev/tty is 8 chars, plus 1 for the null terminator */
+
+char *ctermid(char *__s);
+FILE *fdopen(int __fildes, const char *__type);
+int fileno(FILE *__stream);
+
+#endif /* _POSIX_C_SOURCE >= 1 */
 
 #ifdef __cplusplus
 };

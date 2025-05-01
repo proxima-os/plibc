@@ -1,7 +1,9 @@
 #include "compiler.h"
-#include "stdint.p.h"
 #include "stdio.h"
 #include "stdio.p.h"
+#include <limits.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 static int do_flush(FILE *stream) {
     if (stream->__buffer) {
@@ -27,6 +29,7 @@ static int do_flush(FILE *stream) {
         stream->__buf_cur = stream->__buffer;
     }
 
+    stream->__nunget = 0;
     return 0;
 }
 

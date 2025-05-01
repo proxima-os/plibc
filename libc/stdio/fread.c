@@ -1,14 +1,9 @@
 #include "compiler.h"
-#include "limits.p.h"
-#include "stdint.p.h"
 #include "stdio.h"
-#include <errno.h>
+#include <limits.h>
 #include <string.h>
-
-static ssize_t read(int fd, void *buf, ssize_t count) {
-    errno = EBADF;
-    return -1;
-}
+#include <sys/types.h>
+#include <unistd.h>
 
 static ssize_t do_read(FILE *stream, void *buf, ssize_t count) {
     if (stream->__eof) return 0;
@@ -52,10 +47,7 @@ static size_t read_flat(void *buf, size_t count, FILE *stream) {
     size_t ret = 0;
 
     while (ret < count) {
-        size_t wanted = count - ret;
-        if (wanted > SSIZE_MAX) wanted = SSIZE_MAX;
-
-        ssize_t actual = do_read(stream, buf, wanted);
+        ssize_t actual = do_read(stream, buf, count - ret);
         if (actual < 0) {
             stream->__err = 1;
             break;

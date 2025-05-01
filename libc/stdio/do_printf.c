@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
 
 // This file is included by the actual printf functions. See vsnprintf.c for an example.
 // TODO: Indexed arguments

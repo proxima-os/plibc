@@ -1,30 +1,42 @@
 #include "compiler.h"
-#include "stdio.p.h"
 #include "stdlib.p.h"
 #include "sys/auxv.p.h"
+#include "unistd.p.h"
+#include <errno.h> /* IWYU pragma: keep */
 #include <hydrogen/init.h>
-#include <hydrogen/thread.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/auxv.h>
+#include <unistd.h>
 
-__attribute__((constructor(100))) static void init_library(UNUSED int argc, UNUSED char **argv, char **envp) {
+void stub(const char *file, int line, const char *func) {
+    fprintf(stderr, "plibc: attempted to call stub: %s (from %s:%d)\n", func, file, line);
+    fflush(stderr);
+    abort();
+}
+
+__attribute__((constructor(100))) static void init_library(int argc, char **argv, char **envp) {
     environ = envp;
     auxv_data = (uintptr_t *)envp;
     while (*auxv_data++);
 
-    hydrogen_init_info_t *init_info = (hydrogen_init_info_t *)getauxval(HYDROGEN_AT_INIT_INFO);
-
-    if (init_info) {
-        log_handle = init_info->log_handle;
-        fd_bitmap = 7;
+    hydrogen_init_info_t *info = (hydrogen_init_info_t *)getauxval(HYDROGEN_AT_INIT_INFO);
+    if (info) {
+        log_handle = info->log_handle;
+        fd_bitmap |= 7;
     }
 
-    // ignore errors here because it's not critical
-    setvbuf(stdin, NULL, _IOLBF, 0);
-    setvbuf(stdout, NULL, _IOLBF, 0);
-    setvbuf(stderr, NULL, _IOLBF, 0);
+    stderr = fdopen(STDERR_FILENO, "w");
+
+    if (!(stdout = fdopen(STDOUT_FILENO, "w")) && stderr) {
+        fprintf(stderr, "plibc: failed to open stdout: %s\n", strerror(errno));
+    }
+
+    if (!(stdin = fdopen(STDIN_FILENO, "r")) && stderr) {
+        fprintf(stderr, "plibc: failed to open stdin: %s\n", strerror(errno));
+    }
 
     srand(1);
 }

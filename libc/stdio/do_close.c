@@ -1,19 +1,10 @@
 #include "stdio.p.h"
+#include <errno.h> /* IWYU pragma: keep */
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
+#include <unistd.h>
 
-static int close_fd(int fd) {
-    if (fd_valid(fd)) {
-        fd_bitmap &= ~(1 << fd);
-        return 0;
-    }
-
-    errno = EBADF;
-    return -1;
-}
-
-int do_close(FILE *stream) {
+int do_close(FILE *stream, bool close_fd) {
     int err = fflush(stream);
     int orig_errno = errno;
 
@@ -26,7 +17,7 @@ int do_close(FILE *stream) {
         stream->__own = 0;
     }
 
-    if (close_fd(stream->__fd) && !err) return EOF;
+    if (close_fd && close(stream->__fd) && !err) return EOF;
     if (err) errno = orig_errno;
     return err;
 }

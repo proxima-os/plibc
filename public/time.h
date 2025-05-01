@@ -2,8 +2,10 @@
 #define _TIME_H 1
 
 #include <bits/NULL.h>
+#include <bits/clock_t.h> /* IWYU pragma: export */
 #include <bits/features.h>
 #include <bits/size_t.h>
+#include <bits/types.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -11,8 +13,7 @@ extern "C" {
 
 #define CLOCKS_PER_SEC 1000000
 
-typedef long clock_t;
-typedef long time_t;
+typedef __time_t time_t;
 
 struct tm {
     int tm_sec;
@@ -40,6 +41,16 @@ size_t strftime(
         const char *__restrict __format,
         const struct tm *__restrict __timeptr
 );
+
+#if _POSIX_C_SOURCE >= 1
+
+#define CLK_TCK 1000000000ul
+
+extern char *tzname[2];
+
+void tzset(void);
+
+#endif /* _POSIX_C_SOURCE >= 1 */
 
 #ifdef __cplusplus
 };

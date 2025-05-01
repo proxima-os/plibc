@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
 
 // This file is included by the actual scanf functions. See vsscanf.c for an example.
 // TODO: Indexed arguments

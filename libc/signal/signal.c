@@ -1,15 +1,12 @@
+#define __PLIBC_SIGNAL_INLINE
 #include "signal.h"
 #include "compiler.h"
-#include "signal.p.h"
-#include <errno.h>
 
-EXPORT void (*signal(int sig, void (*func)(int)))(int) {
-    if (sig <= 0 || sig >= NUM_SIGNALS) {
-        errno = EINVAL;
-        return SIG_ERR;
-    }
+EXPORT __sig_handler_t signal(int sig, __sig_handler_t func) {
+    struct sigaction act = {.sa_handler = func, .sa_flags = 0};
+    struct sigaction oact;
 
-    void (*old)(int) = sighand[sig];
-    sighand[sig] = func;
-    return old;
+    if (sigaction(sig, &act, &oact)) return SIG_ERR;
+
+    return oact.sa_handler;
 }

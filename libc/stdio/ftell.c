@@ -1,8 +1,11 @@
 #include "compiler.h"
 #include "stdio.h"
-#include <errno.h>
 
 EXPORT long ftell(FILE *stream) {
-    errno = ESPIPE;
-    return -1;
+    fpos_t pos;
+    if (fgetpos(stream, &pos)) return -1;
+
+    pos.__pos -= stream->__nunget;
+    if (pos.__pos < 0) pos.__pos = 0;
+    return pos.__pos;
 }

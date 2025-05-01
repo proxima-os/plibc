@@ -39,6 +39,7 @@ size_t strlen(const char *__s);
 #define memmove __builtin_memmove
 #define memset __builtin_memset
 #define strcat __builtin_strcat
+#define strchr __builtin_strchr
 #define strcmp __builtin_strcmp
 #define strcpy __builtin_strcpy
 #define strlen __builtin_strlen

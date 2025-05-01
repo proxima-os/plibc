@@ -1,8 +1,10 @@
 #include "compiler.h"
-#include "limits.p.h"
 #include "stdio.h"
 #include "stdio.p.h"
+#include <limits.h>
 #include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 static void add_to_dirty_list(FILE *stream) {
     stream->__prev = NULL;
@@ -53,9 +55,7 @@ static size_t write_flat(const void *buf, size_t count, FILE *stream) {
     size_t ret = 0;
 
     while (ret < count) {
-        size_t wanted = count - ret;
-        if (wanted > SSIZE_MAX) wanted = SSIZE_MAX;
-        ssize_t actual = do_write(stream, buf, wanted);
+        ssize_t actual = do_write(stream, buf, count - ret);
 
         if (actual < 0) {
             stream->__err = 1;
