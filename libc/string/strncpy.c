@@ -1,8 +1,9 @@
+#include "compiler.h"
 #include "string.h"
 
 #undef strncpy
 
-char *strncpy(char *s1, const char *s2, size_t n) {
+EXPORT char *strncpy(char *s1, const char *s2, size_t n) {
     char *d = s1;
 
     while (n--) {

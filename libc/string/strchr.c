@@ -1,6 +1,8 @@
 #include "compiler.h"
 #include "string.h"
 
+#undef strchr
+
 EXPORT char *strchr(const char *s, int c) {
     char find = c;
 

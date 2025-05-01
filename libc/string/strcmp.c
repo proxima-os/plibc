@@ -1,8 +1,9 @@
+#include "compiler.h"
 #include "string.h"
 
 #undef strcmp
 
-int strcmp(const char *s1, const char *s2) {
+EXPORT int strcmp(const char *s1, const char *s2) {
     for (;;) {
         unsigned char c1 = *s1++;
         unsigned char c2 = *s2++;

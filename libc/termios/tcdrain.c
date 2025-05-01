@@ -1,6 +1,6 @@
 #include "compiler.h"
 #include "termios.h"
 
-int tcdrain(int fildes) {
+EXPORT int tcdrain(int fildes) {
     STUB();
 }
