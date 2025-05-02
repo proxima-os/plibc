@@ -177,34 +177,34 @@ static uint64_t dbl_to_bits(double value) {
 #define MANTISSA_BITS 52
 #define EXPONENT_BITS 11
 
-#define MANTISSA_MASK ((1ul << MANTISSA_BITS) - 1)
-#define EXPONENT_MASK ((1ul << EXPONENT_BITS) - 1)
+#define MANTISSA_MASK ((1ull << MANTISSA_BITS) - 1)
+#define EXPONENT_MASK ((1ull << EXPONENT_BITS) - 1)
 
 static struct floating_decimal convert_to_decimal(double value) {
     return generic_binary_to_decimal(dbl_to_bits(value), MANTISSA_BITS, EXPONENT_BITS);
 }
 
 static const uint64_t iexp10[20] = {
-        1ul,
-        10ul,
-        100ul,
-        1000ul,
-        10000ul,
-        100000ul,
-        1000000ul,
-        10000000ul,
-        100000000ul,
-        1000000000ul,
-        10000000000ul,
-        100000000000ul,
-        1000000000000ul,
-        10000000000000ul,
-        100000000000000ul,
-        1000000000000000ul,
-        10000000000000000ul,
-        100000000000000000ul,
-        1000000000000000000ul,
-        10000000000000000000ul,
+        1ull,
+        10ull,
+        100ull,
+        1000ull,
+        10000ull,
+        100000ull,
+        1000000ull,
+        10000000ull,
+        100000000ull,
+        1000000000ull,
+        10000000000ull,
+        100000000000ull,
+        1000000000000ull,
+        10000000000000ull,
+        100000000000000ull,
+        1000000000000000ull,
+        10000000000000000ull,
+        100000000000000000ull,
+        1000000000000000000ull,
+        10000000000000000000ull,
 };
 
 #define MAX_DIGITS (sizeof(iexp10) / sizeof(*iexp10))

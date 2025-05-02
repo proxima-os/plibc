@@ -67,12 +67,12 @@ int sigprocmask(int __how, const sigset_t *__restrict __set, sigset_t *__restric
 int sigsuspend(const sigset_t *__sigmask);
 
 __PLIBC_SIGNAL_INLINE int sigaddset(sigset_t *__set, int __signo) {
-    *__set |= 1ul << __signo;
+    *__set |= 1ull << __signo;
     return 0;
 }
 
 __PLIBC_SIGNAL_INLINE int sigdelset(sigset_t *__set, int __signo) {
-    *__set &= ~(1ul << __signo);
+    *__set &= ~(1ull << __signo);
     return 0;
 }
 
@@ -87,7 +87,7 @@ __PLIBC_SIGNAL_INLINE int sigfillset(sigset_t *__set) {
 }
 
 __PLIBC_SIGNAL_INLINE int sigismember(const sigset_t *__set, int __signo) {
-    return !!(*__set & (1ul << __signo));
+    return !!(*__set & (1ull << __signo));
 }
 
 #endif /* _POSIX_C_SOURCE >= 1 */

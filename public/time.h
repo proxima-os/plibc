@@ -44,7 +44,7 @@ size_t strftime(
 
 #if _POSIX_C_SOURCE >= 1
 
-#define CLK_TCK 1000000000ul
+#define CLK_TCK 1000000000ull
 
 extern char *tzname[2];
 
