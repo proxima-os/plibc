@@ -2,6 +2,7 @@
 #include "stdlib.h"
 #include "stdlib.p.h"
 #include <errno.h> /* IWYU pragma: keep */
+#include <hydrogen/handle.h>
 #include <hydrogen/memory.h>
 #include <hydrogen/types.h>
 #include <stddef.h>
@@ -14,8 +15,14 @@ EXPORT void *malloc(size_t size) {
     alloc_meta_t *meta;
 
     if (size >= ALLOC_HUGE) {
-        hydrogen_ret_t
-                ret = hydrogen_vm_map(NULL, 0, HUGE_ALIGN(size), HYDROGEN_MEM_READ | HYDROGEN_MEM_WRITE, NULL, 0);
+        hydrogen_ret_t ret = hydrogen_vmm_map(
+                HYDROGEN_THIS_VMM,
+                0,
+                HUGE_ALIGN(size),
+                HYDROGEN_MEM_READ | HYDROGEN_MEM_WRITE,
+                HYDROGEN_INVALID_HANDLE,
+                0
+        );
         if (ret.error) {
             errno = ret.error;
             return NULL;
@@ -30,7 +37,14 @@ EXPORT void *malloc(size_t size) {
         if (obj) {
             alloc_free[bucket] = obj->next;
         } else {
-            hydrogen_ret_t ret = hydrogen_vm_map(NULL, 0, ALLOC_HUGE, HYDROGEN_MEM_READ | HYDROGEN_MEM_WRITE, NULL, 0);
+            hydrogen_ret_t ret = hydrogen_vmm_map(
+                    HYDROGEN_THIS_VMM,
+                    0,
+                    ALLOC_HUGE,
+                    HYDROGEN_MEM_READ | HYDROGEN_MEM_WRITE,
+                    HYDROGEN_INVALID_HANDLE,
+                    0
+            );
             if (ret.error) {
                 errno = ret.error;
                 return NULL;

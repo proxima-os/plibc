@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 EXPORT int setvbuf(FILE *stream, char *buf, int mode, size_t size) {
-    if (fflush(stream)) return 1;
+    if (unlikely(fflush(stream))) return 1;
 
     switch (mode) {
     case _IOFBF:

@@ -1,10 +1,13 @@
 #include "compiler.h"
 #include "stdlib.h"
 #include "stdlib.p.h"
+#include <errno.h> /* IWYU pragma: keep */
+#include <hydrogen/handle.h>
 #include <hydrogen/memory.h>
 #include <hydrogen/types.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
 EXPORT void *realloc(void *ptr, size_t size) {
@@ -23,31 +26,43 @@ EXPORT void *realloc(void *ptr, size_t size) {
             size_t align_new = HUGE_ALIGN(size);
 
             if (align_new < align_old) {
-                hydrogen_vm_unmap(NULL, (uintptr_t)meta + align_new, align_old - align_new);
+                hydrogen_vmm_unmap(HYDROGEN_THIS_VMM, (uintptr_t)meta + align_new, align_old - align_new);
             } else if (align_new > align_old) {
-                hydrogen_ret_t ret = hydrogen_vm_map(
-                        NULL,
+                hydrogen_ret_t ret = hydrogen_vmm_map(
+                        HYDROGEN_THIS_VMM,
                         (uintptr_t)meta + align_old,
                         align_new - align_old,
                         HYDROGEN_MEM_READ | HYDROGEN_MEM_WRITE | HYDROGEN_MEM_EXACT,
-                        NULL,
+                        HYDROGEN_INVALID_HANDLE,
                         0
                 );
 
                 if (ret.error) {
-                    ret = hydrogen_vm_move(NULL, (uintptr_t)meta, align_old, NULL, 0, align_new);
+                    ret = hydrogen_vmm_move(
+                            HYDROGEN_THIS_VMM,
+                            (uintptr_t)meta,
+                            align_old,
+                            HYDROGEN_THIS_VMM,
+                            0,
+                            align_new
+                    );
                     if (ret.error) goto copy;
 
                     meta = ret.pointer;
                     ptr = ret.pointer + ALLOC_META_OFFSET;
 
-                    int error = hydrogen_vm_remap(
-                            NULL,
+                    int error = hydrogen_vmm_remap(
+                            HYDROGEN_THIS_VMM,
                             (uintptr_t)meta + align_old,
                             align_new - align_old,
                             HYDROGEN_MEM_READ | HYDROGEN_MEM_WRITE
                     );
-                    if (error) goto copy;
+
+                    if (unlikely(error)) {
+                        fprintf(stderr, "plibc: hydrogen_vmm_remap failed: %s\n", strerror(errno));
+                        fflush(stderr);
+                        abort();
+                    }
                 }
             }
 

@@ -4,7 +4,7 @@
 
 EXPORT int __cxa_atexit(void (*func)(void *), void *param, void *dso) {
     atexit_t *atexit = malloc(sizeof(*atexit));
-    if (!atexit) return -1;
+    if (unlikely(!atexit)) return -1;
 
     atexit->func = func;
     atexit->param = param;

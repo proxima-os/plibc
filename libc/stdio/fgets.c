@@ -8,7 +8,7 @@ EXPORT char *fgets(char *s, int n, FILE *stream) {
         int value = fgetc(stream);
 
         if (value == EOF) {
-            if (i == 1 || !feof(stream)) return NULL;
+            if (i == 1 || unlikely(!feof(stream))) return NULL;
             break;
         }
 

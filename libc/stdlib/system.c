@@ -35,7 +35,8 @@ EXPORT int system(const char *string) {
 
     if (pid == 0) {
         execl("/bin/sh", "sh", "-c", "--", string, NULL);
-        write(STDERR_FILENO, "mlibc: execl failed in system()\n", 32);
+        static const char message[] = "mlibc: execl failed in system()\n";
+        write(STDERR_FILENO, message, sizeof(message) - 1);
         _exit(127);
     }
 

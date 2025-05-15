@@ -1,3 +1,4 @@
+#include "compiler.h"
 #include "stdio.p.h"
 #include <errno.h> /* IWYU pragma: keep */
 #include <stdio.h>
@@ -17,7 +18,7 @@ int do_close(FILE *stream, bool close_fd) {
         stream->__own = 0;
     }
 
-    if (close_fd && close(stream->__fd) && !err) return EOF;
-    if (err) errno = orig_errno;
+    if (close_fd && unlikely(close(stream->__fd)) && likely(!err)) return EOF;
+    if (unlikely(err)) errno = orig_errno;
     return err;
 }

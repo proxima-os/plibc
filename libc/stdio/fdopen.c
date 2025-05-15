@@ -6,12 +6,12 @@
 
 EXPORT FILE *fdopen(int fildes, const char *type) {
     int flags = get_open_flags(type);
-    if (flags < 0) return NULL;
+    if (unlikely(flags < 0)) return NULL;
 
     FILE *file = malloc(sizeof(*file));
-    if (!file) return NULL;
+    if (unlikely(!file)) return NULL;
 
-    if (do_open(file, fildes, flags)) {
+    if (unlikely(do_open(file, fildes, flags))) {
         free(file);
         return NULL;
     }

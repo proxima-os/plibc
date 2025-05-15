@@ -16,13 +16,13 @@ EXPORT FILE *tmpfile(void) {
         tmpnam_gen(&state, buf);
         fd = open(buf, O_RDWR | O_CREAT | O_EXCL, 0);
         if (fd >= 0) break;
-        if (errno != EEXIST) return NULL;
+        if (unlikely(errno != EEXIST)) return NULL;
     }
 
     unlink(buf);
 
     FILE *ret = fdopen(fd, "wb+");
-    if (ret) return ret;
+    if (unlikely(ret)) return ret;
 
     int orig_errno = errno;
     close(fd);

@@ -3,7 +3,7 @@
 
 EXPORT int ungetc(int c, FILE *stream) {
     if (c != EOF) {
-        if (stream->__nunget == 4) return EOF;
+        if (unlikely(stream->__nunget == 4)) return EOF;
         stream->__unget <<= 8;
         stream->__unget |= (unsigned char)c;
         stream->__nunget += 1;

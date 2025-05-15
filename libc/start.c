@@ -1,9 +1,7 @@
 #include "compiler.h"
 #include "stdlib.p.h"
 #include "sys/auxv.p.h"
-#include "unistd.p.h"
 #include <errno.h> /* IWYU pragma: keep */
-#include <hydrogen/init.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,12 +19,6 @@ __attribute__((constructor(100))) static void init_library(int argc, char **argv
     environ = envp;
     auxv_data = (uintptr_t *)envp;
     while (*auxv_data++);
-
-    hydrogen_init_info_t *info = (hydrogen_init_info_t *)getauxval(HYDROGEN_AT_INIT_INFO);
-    if (info) {
-        log_handle = info->log_handle;
-        fd_bitmap |= 7;
-    }
 
     stderr = fdopen(STDERR_FILENO, "w");
 

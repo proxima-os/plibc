@@ -20,7 +20,7 @@ static ssize_t do_write(FILE *stream, const void *buf, ssize_t count) {
         stream->__rbf = 0;
         stream->__buf_cur = stream->__buffer;
         stream->__buf_start = stream->__buffer;
-    } else if (stream->__buf_cur == stream->__buf_end && fflush(stream)) {
+    } else if (stream->__buf_cur == stream->__buf_end && unlikely(fflush(stream))) {
         return -1;
     }
 
@@ -57,7 +57,7 @@ static size_t write_flat(const void *buf, size_t count, FILE *stream) {
     while (ret < count) {
         ssize_t actual = do_write(stream, buf, count - ret);
 
-        if (actual < 0) {
+        if (unlikely(actual < 0)) {
             stream->__err = 1;
             break;
         }

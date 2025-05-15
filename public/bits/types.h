@@ -26,8 +26,6 @@ typedef long __ssize_t;
 typedef __int64_t __time_t;
 typedef __uint32_t __uid_t;
 
-typedef __uint64_t __sigset_t;
-
 struct __timespec {
     __time_t tv_sec;
     long tv_nsec;

@@ -4,6 +4,6 @@
 #include <unistd.h>
 
 EXPORT int remove(const char *filename) {
-    if (unlink(filename) && (errno != EISDIR || rmdir(filename))) return -1;
+    if (unlink(filename) && (errno != EISDIR || unlikely(rmdir(filename)))) return -1;
     return 0;
 }

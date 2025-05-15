@@ -11,7 +11,7 @@ typedef struct {
 
 static inline void tmpnam_gen(tmpnam_t *ctx, char *buffer) {
     if (!ctx->state) {
-        ctx->state = hydrogen_get_time();
+        ctx->state = hydrogen_boot_time();
         ctx->state *= 0xe9770214b82cf957;
         ctx->state ^= ctx->state >> 47;
         ctx->state *= 0x2bdd9d20d060fc9b;

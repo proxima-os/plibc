@@ -11,7 +11,7 @@ static int do_flush(FILE *stream) {
             do {
                 ssize_t actual = write(stream->__fd, stream->__buf_start, stream->__buf_cur - stream->__buf_start);
 
-                if (actual < 0) {
+                if (unlikely(actual < 0)) {
                     stream->__err = 1;
                     return EOF;
                 }
@@ -38,7 +38,7 @@ EXPORT int fflush(FILE *stream) {
 
     while (dirty_files) {
         int error = do_flush(dirty_files);
-        if (error) return error;
+        if (unlikely(error)) return error;
     }
 
     return 0;

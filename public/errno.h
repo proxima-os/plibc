@@ -2,7 +2,7 @@
 #define _ERRNO_H 1
 
 #include <bits/features.h>
-#include <hydrogen/errno.h> /* IWYU pragma: export */
+#include <hydrogen/errno.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -11,6 +11,94 @@ extern "C" {
 #define errno errno
 
 extern int errno;
+
+#define EDOM __EDOM
+#define ERANGE __ERANGE
+
+#if _POSIX_C_SOURCE >= 1
+
+#define E2BIG __E2BIG
+#define EACCES __EACCES
+#define EAGAIN __EAGAIN
+#define EBADF __EBADF
+#define EBUSY __EBUSY
+#define ECHILD __ECHILD
+#define EDEADLK __EDEADLK
+#define EEXIST __EEXIST
+#define EFAULT __EFAULT
+#define EFBIG __EFBIG
+#define EINTR __EINTR
+#define EINVAL __EINVAL
+#define EIO __EIO
+#define EISDIR __EISDIR
+#define EMFILE __EMFILE
+#define EMLINK __EMLINK
+#define ENAMETOOLONG __ENAMETOOLONG
+#define ENFILE __ENFILE
+#define ENODEV __ENODEV
+#define ENOENT __ENOENT
+#define ENOEXEC __ENOEXEC
+#define ENOLCK __ENOLCK
+#define ENOMEM __ENOMEM
+#define ENOSPC __ENOSPC
+#define ENOSYS __ENOSYS
+#define ENOTDIR __ENOTDIR
+#define ENOTEMPTY __ENOTEMPTY
+#define ENOTTY __ENOTTY
+#define ENXIO __ENXIO
+#define EPERM __EPERM
+#define EPIPE __EPIPE
+#define EROFS __EROFS
+#define ESPIPE __ESPIPE
+#define ESRCH __ESRCH
+#define EXDEV __EXDEV
+
+#endif /* _POSIX_C_SOURCE >= 1 */
+
+#ifdef _PROXIMA_SOURCE
+
+#define EADDRINUSE __EADDRINUSE
+#define EADDRNOTAVAIL __EADDRNOTAVAIL
+#define EAFNOSUPPORT __EAFNOSUPPORT
+#define EALREADY __EALREADY
+#define EBADMSG __EBADMSG
+#define ECANCELED __ECANCELED
+#define ECONNABORTED __ECONNABORTED
+#define ECONNREFUSED __ECONNREFUSED
+#define ECONNRESET __ECONNRESET
+#define EDESTADDRREQ __EDESTADDRREQ
+#define EDQUOT __EDQUOT
+#define EHOSTUNREACH __EHOSTUNREACH
+#define EIDRM __EIDRM
+#define EILSEQ __EILSEQ
+#define EINPROGRESS __EINPROGRESS
+#define EISCONN __EISCONN
+#define ELOOP __ELOOP
+#define EMSGSIZE __EMSGSIZE
+#define EMULTIHOP __EMULTIHOP
+#define ENETDOWN __ENETDOWN
+#define ENETRESET __ENETRESET
+#define ENETUNREACH __ENETUNREACH
+#define ENOBUFS __ENOBUFS
+#define ENOLINK __ENOLINK
+#define ENOMSG __ENOMSG
+#define ENOPROTOOPT __ENOPROTOOPT
+#define ENOTCONN __ENOTCONN
+#define ENOTRECOVERABLE __ENOTRECOVERABLE
+#define ENOTSOCK __ENOTSOCK
+#define ENOTSUP __ENOTSUP
+#define EOVERFLOW __EOVERFLOW
+#define EOWNERDEAD __EOWNERDEAD
+#define EPROTO __EPROTO
+#define EPROTONOSUPPORT __EPROTONOSUPPORT
+#define EPROTOTYPE __EPROTOTYPE
+#define ESOCKTNOSUPPORT __ESOCKTNOSUPPORT
+#define ESTALE __ESTALE
+#define ETIMEDOUT __ETIMEDOUT
+#define ETXTBSY __ETXTBSY
+
+
+#endif /* defined(_PROXIMA_SOURCE) */
 
 #ifdef __cplusplus
 };

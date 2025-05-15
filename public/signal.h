@@ -3,6 +3,7 @@
 
 #include <bits/features.h>
 #include <bits/types.h>
+#include <hydrogen/signal.h>
 
 #ifndef __PLIBC_SIGNAL_INLINE
 #define __PLIBC_SIGNAL_INLINE static inline
@@ -12,17 +13,16 @@
 extern "C" {
 #endif
 
-#define SIG_DFL ((void(*)(int))0)
 #define SIG_ERR ((void(*)(int))-1)
-#define SIG_IGN ((void(*)(int))1)
+#define SIG_DFL __SIG_DFL
+#define SIG_IGN __SIG_IGN
 
-/* when adding more signals, make sure to update NSIG */
-#define SIGABRT 1
-#define SIGFPE 2
-#define SIGILL 3
-#define SIGINT 4
-#define SIGSEGV 5
-#define SIGTERM 6
+#define SIGABRT __SIGABRT
+#define SIGFPE __SIGFPE
+#define SIGILL __SIGILL
+#define SIGINT __SIGINT
+#define SIGSEGV __SIGSEGV
+#define SIGTERM __SIGTERM
 
 typedef int sig_atomic_t;
 typedef void (*__sig_handler_t)(int);
@@ -32,33 +32,35 @@ int raise(int __sig);
 
 #if _POSIX_C_SOURCE >= 1
 
-#define SA_NOCLDSTOP (1 << 0)
+#define SA_NOCLDSTOP __SA_NOCLDSTOP
 
-#define SIGALRM 7
-#define SIGCHLD 8
-#define SIGCONT 9
-#define SIGHUP 10
-#define SIGKILL 11
-#define SIGPIPE 12
-#define SIGQUIT 13
-#define SIGSTOP 14
-#define SIGTSTP 15
-#define SIGTTIN 16
-#define SIGTTOU 17
-#define SIGUSR1 18
-#define SIGUSR2 19
+#define SIGALRM __SIGALRM
+#define SIGCHLD __SIGCHLD
+#define SIGCONT __SIGCONT
+#define SIGHUP __SIGHUP
+#define SIGKILL __SIGKILL
+#define SIGPIPE __SIGPIPE
+#define SIGQUIT __SIGQUIT
+#define SIGSTOP __SIGSTOP
+#define SIGTSTP __SIGTSTP
+#define SIGTTIN __SIGTTIN
+#define SIGTTOU __SIGTTOU
+#define SIGUSR1 __SIGUSR1
+#define SIGUSR2 __SIGUSR2
 
-#define SIG_BLOCK 0
-#define SIG_UNBLOCK 1
-#define SIG_SETMASK 2
+#define SIG_BLOCK __SIG_BLOCK
+#define SIG_UNBLOCK __SIG_UNBLOCK
+#define SIG_SETMASK __SIG_SETMASK
 
 typedef __sigset_t sigset_t;
 
 struct sigaction {
-    __sig_handler_t sa_handler;
-    sigset_t sa_mask;
-    int sa_flags;
+    struct __sigaction __base;
 };
+
+#define sa_handler __base.__func.__handler
+#define sa_mask __base.__mask
+#define sa_flags __base.__flags
 
 int kill(__pid_t __pid, int __sig);
 int sigaction(int __sig, const struct sigaction *__restrict __act, struct sigaction *__restrict __oact);
@@ -93,7 +95,7 @@ __PLIBC_SIGNAL_INLINE int sigismember(const sigset_t *__set, int __signo) {
 #endif /* _POSIX_C_SOURCE >= 1 */
 
 #ifdef _PROXIMA_SOURCE
-#define NSIG 20
+#define NSIG __NSIG
 #endif
 
 #ifdef __cplusplus

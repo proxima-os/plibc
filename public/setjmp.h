@@ -3,6 +3,7 @@
 
 #include <bits/features.h>
 #include <bits/types.h>
+#include <hydrogen/signal.h>
 
 #ifdef __cplusplus
 extern "C" {

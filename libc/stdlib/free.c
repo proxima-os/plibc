@@ -11,7 +11,7 @@ EXPORT void free(void *ptr) {
     alloc_meta_t *meta = ptr - ALLOC_META_OFFSET;
 
     if (meta->size >= ALLOC_HUGE) {
-        hydrogen_vm_unmap(NULL, (uintptr_t)meta, HUGE_ALIGN(meta->size));
+        hydrogen_vmm_unmap(HYDROGEN_THIS_VMM, (uintptr_t)meta, HUGE_ALIGN(meta->size));
         return;
     }
 

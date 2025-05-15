@@ -1,7 +1,7 @@
 #include "compiler.h"
 #include "unistd.h"
-#include <hydrogen/thread.h>
+#include <hydrogen/process.h>
 
 EXPORT void _exit(int status) {
-    hydrogen_thread_exit();
+    hydrogen_process_exit(status);
 }

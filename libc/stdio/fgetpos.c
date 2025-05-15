@@ -5,7 +5,7 @@
 
 EXPORT int fgetpos(FILE *stream, fpos_t *pos) {
     off_t off = lseek(stream->__fd, 0, SEEK_CUR);
-    if (off < 0) return -1;
+    if (unlikely(off < 0)) return -1;
 
     if (stream->__buffer) {
         if (stream->__rbf) {

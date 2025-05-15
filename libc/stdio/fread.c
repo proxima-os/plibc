@@ -24,7 +24,7 @@ static ssize_t do_read(FILE *stream, void *buf, ssize_t count) {
     if (!stream->__buffer) return read(stream->__fd, buf, count);
 
     if (!stream->__rbf) {
-        if (fflush(stream)) return -1;
+        if (unlikely(fflush(stream))) return -1;
         stream->__rbf = 1;
     }
 
@@ -32,7 +32,7 @@ static ssize_t do_read(FILE *stream, void *buf, ssize_t count) {
 
     if (avail == 0) {
         avail = read(stream->__fd, stream->__buffer, stream->__buf_end - stream->__buffer);
-        if (avail < 0) return -1;
+        if (unlikely(avail < 0)) return -1;
         stream->__buf_cur = stream->__buffer + avail;
     }
 
@@ -48,7 +48,7 @@ static size_t read_flat(void *buf, size_t count, FILE *stream) {
 
     while (ret < count) {
         ssize_t actual = do_read(stream, buf, count - ret);
-        if (actual < 0) {
+        if (unlikely(actual < 0)) {
             stream->__err = 1;
             break;
         } else {
