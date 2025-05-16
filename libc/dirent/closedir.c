@@ -1,6 +1,10 @@
 #include "dirent.h"
 #include "compiler.h"
+#include <stdlib.h>
+#include <unistd.h>
 
 EXPORT int closedir(DIR *dirp) {
-    STUB();
+    int ret = close(dirp->__fd);
+    free(dirp);
+    return ret;
 }

@@ -11,7 +11,9 @@
 extern "C" {
 #endif
 
-typedef struct _DIR DIR;
+typedef struct {
+    int __fd;
+} DIR;
 
 struct dirent {
     char d_name[0];
