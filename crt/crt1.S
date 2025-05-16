@@ -1,4 +1,4 @@
-.text
+.section ".text._start", "ax", @progbits
 
 .balign 16
 .globl _start

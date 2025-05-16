@@ -1,16 +1,16 @@
-crt0_args = []
+crt1_args = []
 
 if get_option('debug')
-    crt0_args += '-g'
+    crt1_args += '-g'
 endif
 
-crt0 = custom_target(
-    'crt0',
+crt1 = custom_target(
+    'crt1',
     build_by_default: true,
-    command: compiler.cmd_array() + ['@INPUT@', '-o', '@OUTPUT@', '-c'] + crt0_args,
-    input: files('crt0.S'),
+    command: compiler.cmd_array() + ['@INPUT@', '-o', '@OUTPUT@', '-c'] + crt1_args,
+    input: files('crt1.S'),
     install: true,
     install_dir: get_option('libdir'),
     install_tag: 'runtime',
-    output: 'crt0.o',
+    output: 'crt1.o',
 )

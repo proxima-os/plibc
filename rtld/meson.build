@@ -24,6 +24,6 @@ rtld_shared = shared_library(
     link_with: libc_common,
     link_whole: rtld_static,
     name_prefix: '',
-    objects: crt0,
+    objects: crt1,
     soversion: 1,
 )
