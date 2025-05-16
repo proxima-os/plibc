@@ -47,4 +47,6 @@ extern "C" {
 
 /* this is outside of the inclusion guard because this header might be on the include path
  * multiple times */
+#if defined(__GNUC__) && !defined(_GCC_LIMITS_H_)
 #include_next <limits.h> /* IWYU pragma: keep */
+#endif
