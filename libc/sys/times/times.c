@@ -13,9 +13,9 @@ EXPORT clock_t times(struct tms *buffer) {
         return -1;
     }
 
-    buffer->tms_utime = time.user_time / 1000;
-    buffer->tms_stime = time.kernel_time / 1000;
-    buffer->tms_cutime = time.child_user_time / 1000;
-    buffer->tms_cstime = time.child_kernel_time / 1000;
-    return hydrogen_boot_time() / 1000;
+    buffer->tms_utime = time.user_time;
+    buffer->tms_stime = time.kernel_time;
+    buffer->tms_cutime = time.child_user_time;
+    buffer->tms_cstime = time.child_kernel_time;
+    return hydrogen_boot_time();
 }
