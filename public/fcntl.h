@@ -5,7 +5,7 @@
 #include <bits/types.h>
 
 #if _POSIX_C_SOURCE < 1
-#error "dirent.h requires _POSIX_C_SOURCE >= 1"
+#error "fcntl.h requires _POSIX_C_SOURCE >= 1"
 #endif
 
 #ifdef __cplusplus
