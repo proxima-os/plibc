@@ -18,13 +18,14 @@ extern "C" {
 #define F_GETFD 1
 #define F_GETFL 2
 #define F_GETLK 3
-#define F_RDLCK 4
-#define F_SETFD 5
-#define F_SETFL 6
-#define F_SETLK 7
-#define F_SETLKW 8
-#define F_UNLCK 9
-#define F_WRLCK 10
+#define F_SETFD 4
+#define F_SETFL 5
+#define F_SETLK 6
+#define F_SETLKW 7
+
+#define F_UNLCK 0
+#define F_RDLCK 1
+#define F_WRLCK 2
 
 #define O_ACCMODE (7 << 0)
 #define O_RDONLY (1 << 0)
