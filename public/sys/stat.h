@@ -3,6 +3,7 @@
 
 #include <bits/features.h>
 #include <bits/types.h>
+#include <hydrogen/stat.h>
 
 #if _POSIX_C_SOURCE < 1
 #error "sys/stat.h requires _POSIX_C_SOURCE >= 1"
@@ -12,20 +13,20 @@
 extern "C" {
 #endif
 
-#define S_IXOTH 0000001
-#define S_IWOTH 0000002
-#define S_IROTH 0000004
-#define S_IRWXO 0000007
-#define S_IXGRP 0000010
-#define S_IWGRP 0000020
-#define S_IRGRP 0000040
-#define S_IRWXG 0000070
-#define S_IXUSR 0000100
-#define S_IWUSR 0000200
-#define S_IRUSR 0000400
-#define S_IRWXU 0000700
-#define S_ISGID 0002000
-#define S_ISUID 0004000
+#define S_IXOTH __S_IXOTH
+#define S_IWOTH __S_IWOTH
+#define S_IROTH __S_IROTH
+#define S_IRWXO (S_IROTH | S_IWOTH | S_IXOTH)
+#define S_IXGRP __S_IXGRP
+#define S_IWGRP __S_IWGRP
+#define S_IRGRP __S_IRGRP
+#define S_IRWXG (S_IRGRP | S_IWGRP | S_IXGRP)
+#define S_IXUSR __S_IXUSR
+#define S_IWUSR __S_IWUSR
+#define S_IRUSR __S_IRUSR
+#define S_IRWXU (S_IRUSR | S_IWUSR | S_IXUSR)
+#define S_ISGID __S_ISGID
+#define S_ISUID __S_ISUID
 
 #define __S_IFMT 0xf000
 #define __S_IFIFO 0x1000
@@ -48,9 +49,14 @@ struct stat {
     struct __timespec st_atim;
     struct __timespec st_ctim;
     struct __timespec st_mtim;
-    __uid_t uid;
-    __gid_t gid;
+    __mode_t st_mode;
+    __uid_t st_uid;
+    __gid_t st_gid;
 };
+
+#define st_atime st_atim.tv_sec
+#define st_ctime st_ctim.tv_sec
+#define st_mtime st_mtim.tv_sec
 
 int chmod(const char *__path, __mode_t __mode);
 int fstat(int __fildes, struct stat *__buf);

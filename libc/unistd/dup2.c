@@ -13,7 +13,7 @@ EXPORT int dup2(int fildes, int fildes2) {
             HYDROGEN_THIS_NAMESPACE,
             fildes2,
             -1,
-            HYDROGEN_HANDLE_CLONE_KEEP /* | HYDROGEN_HANDLE_EXEC_KEEP */
+            HYDROGEN_HANDLE_CLONE_KEEP | HYDROGEN_HANDLE_EXEC_KEEP
     );
 
     if (unlikely(ret.error)) {

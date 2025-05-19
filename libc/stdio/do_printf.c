@@ -628,11 +628,11 @@ USED static int do_printf(void *ctx, const char *format, va_list arg) {
     const char *last = format;
     int count = 0;
 
-#define DO_WRITE(func, data, size, ...)                           \
-    do {                                                          \
-        size_t _siz = (size);                                     \
-        if (!func(ctx, (data), (size), ##__VA_ARGS__)) return -1; \
-        count += _siz;                                            \
+#define DO_WRITE(func, data, size, ...)                      \
+    do {                                                     \
+        int _siz = func(ctx, (data), (size), ##__VA_ARGS__); \
+        if (_siz < 0) return -1;                             \
+        count += _siz;                                       \
     } while (0)
 
     for (;;) {

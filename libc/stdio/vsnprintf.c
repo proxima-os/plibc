@@ -9,7 +9,7 @@ struct vsnprintf_ctx {
     size_t rem;
 };
 
-static bool vsnprintf_write(struct vsnprintf_ctx *ctx, const void *data, size_t size) {
+static int vsnprintf_write(struct vsnprintf_ctx *ctx, const void *data, size_t size) {
     if (ctx->rem > 1) {
         size_t cur = size < ctx->rem ? size : ctx->rem - 1;
         memcpy(ctx->buf, data, cur);
@@ -17,7 +17,7 @@ static bool vsnprintf_write(struct vsnprintf_ctx *ctx, const void *data, size_t 
         ctx->rem -= cur;
     }
 
-    return true;
+    return size;
 }
 
 #define PRINTF_WRITE vsnprintf_write

@@ -1,6 +1,7 @@
 #include "fcntl.h"
 #include "compiler.h"
 #include <errno.h>
+#include <hydrogen/filesystem.h>
 #include <hydrogen/handle.h>
 #include <hydrogen/types.h>
 #include <stdarg.h>
@@ -29,7 +30,7 @@ EXPORT int fcntl(int fildes, int cmd, ...) {
                     HYDROGEN_THIS_NAMESPACE,
                     -min - 1,
                     -1,
-                    HYDROGEN_HANDLE_CLONE_KEEP /* | HYDROGEN_HANDLE_EXEC_KEEP */
+                    HYDROGEN_HANDLE_CLONE_KEEP | HYDROGEN_HANDLE_EXEC_KEEP
             );
         } else {
             ret = (hydrogen_ret_t){.error = EINVAL};
@@ -45,24 +46,34 @@ EXPORT int fcntl(int fildes, int cmd, ...) {
             ret.integer = 0;
 
             // if ((flags & HYDROGEN_HANDLE_CLONE_KEEP) == 0) ret.integer |= FD_CLOFORK; // TODO
-            // if ((flags & HYDROGEN_HANDLE_EXEC_KEEP) == 0) ret.integer |= FD_CLOEXEC; // TODO
+            if ((flags & HYDROGEN_HANDLE_EXEC_KEEP) == 0) ret.integer |= FD_CLOEXEC;
         }
 
         break;
     }
-    case F_GETFL: STUB();
+    case F_GETFL: ret = hydrogen_fs_fflags(fildes, -1); break;
     case F_GETLK: STUB();
     case F_SETFD: {
         int orig_flags = va_arg(args, int);
         uint32_t flags = 0;
 
         /*if ((orig_flags & FD_CLOFORK) == 0)*/ flags |= HYDROGEN_HANDLE_CLONE_KEEP; // TODO
-        /*if ((orig_flags & FD_CLOEXEC) == 0) flags |= HYDROGEN_HANDLE_EXEC_KEEP;*/  // TODO
+        if ((orig_flags & FD_CLOEXEC) == 0) flags |= HYDROGEN_HANDLE_EXEC_KEEP;
 
         ret = hydrogen_namespace_add(HYDROGEN_THIS_NAMESPACE, fildes, HYDROGEN_THIS_NAMESPACE, fildes, -1, flags);
         break;
     }
-    case F_SETFL: STUB();
+    case F_SETFL: {
+        int flags = va_arg(args, int);
+
+        if (likely(flags >= 0)) {
+            ret = hydrogen_fs_fflags(fildes, flags);
+        } else {
+            ret = (hydrogen_ret_t){.error = EINVAL};
+        }
+
+        break;
+    }
     case F_SETLK: STUB();
     case F_SETLKW: STUB();
     default: ret.error = EINVAL; break;

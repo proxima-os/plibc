@@ -21,6 +21,7 @@ __attribute__((constructor(100))) static void init_library(int argc, char **argv
     while (*auxv_data++);
 
     stderr = fdopen(STDERR_FILENO, "w");
+    if (stderr) setvbuf(stderr, NULL, _IONBF, 0);
 
     if (!(stdout = fdopen(STDOUT_FILENO, "w")) && stderr) {
         fprintf(stderr, "plibc: failed to open stdout: %s\n", strerror(errno));

@@ -16,7 +16,7 @@ EXPORT FILE *fdopen(int fildes, const char *type) {
         return NULL;
     }
 
-    /*if (flags & O_CLOEXEC) {
+    if (flags & __O_CLOEXEC) {
         int fdfl = fcntl(fildes, F_GETFD);
         if (fdfl == -1 || (!(fdfl & FD_CLOEXEC) && fcntl(fildes, F_SETFD, fdfl | FD_CLOEXEC) == -1)) {
             int orig_errno = errno;
@@ -24,7 +24,7 @@ EXPORT FILE *fdopen(int fildes, const char *type) {
             errno = orig_errno;
             return NULL;
         }
-    }*/
+    }
 
     return file;
 }

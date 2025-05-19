@@ -3,6 +3,7 @@
 
 #include <bits/features.h>
 #include <bits/types.h>
+#include <hydrogen/fcntl.h>
 
 #if _POSIX_C_SOURCE < 1
 #error "fcntl.h requires _POSIX_C_SOURCE >= 1"
@@ -27,17 +28,17 @@ extern "C" {
 #define F_RDLCK 1
 #define F_WRLCK 2
 
-#define O_ACCMODE (7 << 0)
-#define O_RDONLY (1 << 0)
-#define O_WRONLY (1 << 1)
+#define O_RDONLY __O_RDONLY
+#define O_WRONLY __O_WRONLY
 #define O_RDWR (O_RDONLY | O_WRONLY)
+#define O_ACCMODE O_RDWR
 
-#define O_APPEND (1 << 3)
-#define O_CREAT (1 << 4)
-#define O_EXCL (1 << 5)
-#define O_NOCTTY (1 << 6)
-#define O_NONBLOCK (1 << 7)
-#define O_TRUNC (1 << 8)
+#define O_APPEND __O_APPEND
+#define O_CREAT __O_CREAT
+#define O_EXCL __O_EXCL
+#define O_NOCTTY 0
+#define O_NONBLOCK __O_NONBLOCK
+#define O_TRUNC __O_TRUNC
 
 struct flock {
     __off_t l_start;

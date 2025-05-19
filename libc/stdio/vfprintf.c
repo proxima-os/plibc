@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-static bool vfprintf_write(FILE *ctx, const void *data, size_t size) {
-    return fwrite(data, size, 1, ctx) == 1;
+static int vfprintf_write(FILE *ctx, const void *data, size_t size) {
+    return fwrite(data, size, 1, ctx) == 1 ? (int)size : -1;
 }
 
 #define PRINTF_WRITE vfprintf_write

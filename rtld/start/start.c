@@ -404,7 +404,7 @@ EXPORT void __plibc_rtld_init(uintptr_t *stack, Elf64_Dyn *dynamic, uintptr_t *g
         const char *str = (const char *)*stack++;
         if (!str) break;
 
-        if (compare_string_prefix(str, "LD_BIND_NOW=", 12) && str[12] != 0) {
+        if (compare_string_prefix(str, "LD_BIND_NOW=", 12) == 0 && str[12] != 0) {
             force_bind_now = true;
             phase_mask |= 1 << PHASE_BIND;
         }

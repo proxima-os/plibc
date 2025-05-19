@@ -30,7 +30,7 @@ static inline int get_open_flags(const char *mode) {
     for (char c = *mode; c != 0; c = *++mode) {
         switch (c) {
         case 'b': break;
-        // case 'e': flags |= O_CLOEXEC; break;
+        case 'e': flags |= __O_CLOEXEC; break;
         case 'x':
             if (flags & O_CREAT) flags |= O_EXCL;
             break;
