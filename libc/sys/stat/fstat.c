@@ -7,7 +7,7 @@
 
 EXPORT int fstat(int fildes, struct stat *buf) {
     hydrogen_file_information_t info;
-    int error = hydrogen_fs_stat(fildes, NULL, 0, &info, __AT_SYMLINK_NOFOLLOW);
+    int error = hydrogen_fs_fstat(fildes, &info);
 
     if (unlikely(error)) {
         errno = error;

@@ -850,7 +850,7 @@ USED static int do_printf(void *ctx, const char *format, va_list arg) {
             if (ptr) {
                 spec.alternate = true;
                 spec.precision = -1;
-                int len = print_hex(ptr, &spec, (uintptr_t)ptr, CASE_BIT_LOWER);
+                int len = print_hex(ctx, &spec, (uintptr_t)ptr, CASE_BIT_LOWER);
                 if (len < 0) return -1;
                 count += len;
             } else {

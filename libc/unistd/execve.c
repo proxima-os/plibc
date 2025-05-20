@@ -1,7 +1,7 @@
 #include "compiler.h"
 #include "unistd.h"
 #include <assert.h>
-#include <errno.h>
+#include <errno.h> /* IWYU pragma: keep */
 #include <hydrogen/filesystem.h>
 #include <hydrogen/handle.h>
 #include <hydrogen/process.h>
@@ -10,13 +10,6 @@
 #include <string.h>
 
 EXPORT int execve(const char *path, char *const *argv, char *const *envp) {
-    size_t length = strlen(path);
-
-    if (unlikely(!length)) {
-        errno = ENOENT;
-        return -1;
-    }
-
     size_t argc = 0;
     size_t envc = 0;
 
@@ -36,7 +29,7 @@ EXPORT int execve(const char *path, char *const *argv, char *const *envp) {
         strings[argc + i].size = strlen(envp[i]);
     }
 
-    hydrogen_ret_t image = hydrogen_fs_open(HYDROGEN_INVALID_HANDLE, path, length, 0, 0);
+    hydrogen_ret_t image = hydrogen_fs_open(HYDROGEN_INVALID_HANDLE, path, strlen(path), 0, 0);
 
     if (unlikely(image.error)) {
         errno = image.error;

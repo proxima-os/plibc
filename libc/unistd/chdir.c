@@ -1,20 +1,13 @@
 #include "compiler.h"
 #include "unistd.h"
-#include <errno.h>
+#include <errno.h> /* IWYU pragma: keep */
 #include <hydrogen/filesystem.h>
 #include <hydrogen/handle.h>
 #include <hydrogen/process.h>
 #include <string.h>
 
 EXPORT int chdir(const char *path) {
-    size_t length = strlen(path);
-
-    if (unlikely(!length)) {
-        errno = ENOENT;
-        return -1;
-    }
-
-    int error = hydrogen_fs_chdir(HYDROGEN_THIS_PROCESS, HYDROGEN_INVALID_HANDLE, path, length);
+    int error = hydrogen_fs_chdir(HYDROGEN_THIS_PROCESS, HYDROGEN_INVALID_HANDLE, path, strlen(path));
 
     if (unlikely(error)) {
         errno = error;

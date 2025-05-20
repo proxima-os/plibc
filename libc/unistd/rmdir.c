@@ -1,6 +1,6 @@
 #include "compiler.h"
 #include "unistd.h"
-#include <errno.h>
+#include <errno.h> /* IWYU pragma: keep */
 #include <fcntl.h>
 #include <hydrogen/filesystem.h>
 #include <hydrogen/handle.h>
@@ -8,14 +8,7 @@
 #include <string.h>
 
 EXPORT int rmdir(const char *path) {
-    size_t len = strlen(path);
-
-    if (unlikely(!len)) {
-        errno = ENOENT;
-        return -1;
-    }
-
-    int error = hydrogen_fs_unlink(HYDROGEN_INVALID_HANDLE, path, len, __AT_REMOVEDIR);
+    int error = hydrogen_fs_unlink(HYDROGEN_INVALID_HANDLE, path, strlen(path), __AT_REMOVEDIR);
 
     if (unlikely(error)) {
         errno = error;

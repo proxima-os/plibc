@@ -9,8 +9,8 @@
 #include <sys/types.h>
 
 EXPORT int open(const char *path, int oflag, ...) {
-    if (!path[0]) {
-        errno = ENOENT;
+    if (unlikely((oflag & O_ACCMODE) == 0)) {
+        errno = EINVAL;
         return -1;
     }
 

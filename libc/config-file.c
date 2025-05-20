@@ -24,7 +24,7 @@ int config_file_prepare(config_file_t *file) {
     }
 
     hydrogen_file_information_t info;
-    int error = hydrogen_fs_stat(fd, NULL, 0, &info, 0);
+    int error = hydrogen_fs_fstat(fd, &info);
 
     if (unlikely(error)) {
         close(fd);
