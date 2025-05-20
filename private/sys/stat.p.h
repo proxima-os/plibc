@@ -23,5 +23,13 @@ static inline int convert_stat(struct stat *out, hydrogen_file_information_t *in
     out->st_uid = info->uid;
     out->st_gid = info->gid;
 
+    switch (info->type) {
+    case HYDROGEN_REGULAR_FILE: out->st_mode |= __S_IFREG; break;
+    case HYDROGEN_DIRECTORY: out->st_mode |= __S_IFDIR; break;
+    case HYDROGEN_SYMLINK: out->st_mode |= __S_IFLNK; break;
+    case HYDROGEN_CHARACTER_DEVICE: out->st_mode |= __S_IFCHR; break;
+    default: break;
+    }
+
     return 0;
 }

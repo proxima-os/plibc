@@ -34,6 +34,7 @@ extern "C" {
 #define __S_IFDIR 0x4000
 #define __S_IFBLK 0x6000
 #define __S_IFREG 0x8000
+#define __S_IFLNK 0xa000
 
 #define S_ISFIFO(m) (((m) & __S_IFMT) == __S_IFIFO)
 #define S_ISCHR(m) (((m) & __S_IFMT) == __S_IFCHR)
