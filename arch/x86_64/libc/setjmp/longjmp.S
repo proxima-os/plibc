@@ -20,3 +20,5 @@ longjmp:
     jmp *0x38(%rdi)
     .cfi_endproc
 .size longjmp, . - longjmp
+
+.section ".note.GNU-stack", "", @progbits

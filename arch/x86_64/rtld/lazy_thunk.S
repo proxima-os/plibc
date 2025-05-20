@@ -1,9 +1,18 @@
-.section ".text.__plibc_rtld_start_lazy_thunk", "ax", @progbits
+#ifndef LAZY_PREFIX
+#define LAZY_PREFIX
+#endif
+
+#define CONCAT3(a, b, c) a ##b ##c
+#define NAME2(middle, suffix) CONCAT3(__plibc_rtld_, middle, suffix)
+#define NAME(suffix) NAME2(LAZY_PREFIX, lazy##suffix)
+
+.text
 
 .balign 16
-.globl __plibc_rtld_start_lazy_thunk
-.type __plibc_rtld_start_lazy_thunk, @function
-__plibc_rtld_start_lazy_thunk:
+.globl NAME(_thunk)
+.hidden NAME(_thunk)
+.type NAME(_thunk), @function
+NAME(_thunk):
     .cfi_startproc
     .cfi_def_cfa rsp, 0x18
     .cfi_offset rip, -0x08
@@ -32,7 +41,7 @@ __plibc_rtld_start_lazy_thunk:
 
     mov 0x48(%rsp), %rdi
     mov 0x50(%rsp), %rsi
-    call __plibc_rtld_start_lazy
+    call NAME()
     mov %rax, 0x50(%rsp) # prepare return address
 
     mov 0x00(%rsp), %rax
@@ -57,4 +66,6 @@ __plibc_rtld_start_lazy_thunk:
     .cfi_restore r11
     ret
     .cfi_endproc
-.size __plibc_rtld_start_lazy_thunk, . - __plibc_rtld_start_lazy_thunk
+.size NAME(_thunk), . - NAME(_thunk)
+
+.section ".note.GNU-stack", "", @progbits

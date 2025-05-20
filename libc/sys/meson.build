@@ -1,0 +1,5 @@
+subdir('auxv')
+subdir('stat')
+subdir('times')
+subdir('utsname')
+subdir('wait')

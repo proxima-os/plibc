@@ -1,4 +1,4 @@
-math_lib = static_library(
+libc_sublibs += static_library(
     'math',
     '__cos.c',
     #'__cosdf.c',

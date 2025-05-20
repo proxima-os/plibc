@@ -10,11 +10,11 @@ rtld_static = static_library(
     include_directories: inc,
     link_whole: rtld_start,
     pic: true,
+    sources: rtld_sources,
 )
 
 rtld_shared = shared_library(
     'ld64',
-    '../libc/start-static.S',
     'main.c',
     dependencies: hydrogen,
     include_directories: inc,
@@ -25,5 +25,6 @@ rtld_shared = shared_library(
     link_whole: rtld_static,
     name_prefix: '',
     objects: crt1,
+    sources: libc_static_sources,
     soversion: 1,
 )

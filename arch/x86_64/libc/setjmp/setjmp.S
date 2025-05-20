@@ -9,3 +9,5 @@ setjmp:
     jmp sigsetjmp
     .cfi_endproc
 .size setjmp, . - setjmp
+
+.section ".note.GNU-stack", "", @progbits

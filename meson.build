@@ -16,25 +16,32 @@ add_project_link_arguments('-nolibc', '-nostartfiles', '-Wl,-Bsymbolic', languag
 
 inc = [include_directories('public', is_system: true), include_directories('private')]
 
+libc_sources = []
+libc_sublibs = []
+libc_shared_sources = []
+libc_static_sources = []
+rtld_sources = []
+rtld_start_sources = []
+
+subdir('arch' / host_machine.cpu_family())
 subdir('public')
-subdir('crt')
 subdir('libc')
 subdir('rtld')
 
 libc_static = static_library(
     'c',
-    'libc/start-static.S',
     install: true,
     link_whole: [libc_common, rtld_static],
+    sources: libc_static_sources,
 )
 
 libc_shared = shared_library(
     'c',
-    'libc/start-shared.S',
     dependencies: hydrogen,
     install: true,
     link_whole: libc_common,
     link_with: rtld_shared,
+    sources: libc_shared_sources,
 )
 
 subdir('test-init')
