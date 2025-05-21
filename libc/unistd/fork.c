@@ -1,5 +1,6 @@
 #include "compiler.h"
 #include "unistd.h"
+#include "unistd.p.h"
 #include <errno.h> /* IWYU pragma: keep */
 #include <hydrogen/handle.h>
 #include <hydrogen/memory.h>
@@ -32,6 +33,7 @@ EXPORT pid_t fork(void) {
 
     if (thread.integer == (size_t)HYDROGEN_INVALID_HANDLE) {
         // we're in the cloned namespace, so the handles don't exist for us
+        cur_pid = -1;
         return 0;
     }
 

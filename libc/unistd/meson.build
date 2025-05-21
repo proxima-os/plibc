@@ -5,6 +5,7 @@ libc_sources += files(
     'chdir.c',
     'chown.c',
     'close.c',
+    'cur_pid.c',
     'dup.c',
     'dup2.c',
     'execl.c',
