@@ -1,8 +1,6 @@
 #ifndef _BITS_FEATURES_H
 #define _BITS_FEATURES_H
 
-#define __PLIBC_POSIX_MAX 1
-
 #if defined(_POSIX_SOURCE) && !defined(_POSIX_C_SOURCE)
 #define _POSIX_C_SOURCE 1
 #endif
@@ -11,14 +9,12 @@
 #define _DEFAULT_SOURCE
 #endif
 
-#ifdef _DEFAULT_SOURCE
-
-#if _POSIX_C_SOURCE < __PLIBC_POSIX_MAX
+#if defined(_DEFAULT_SOURCE) || defined(_PROXIMA_SOURCE)
+#if _POSIX_C_SOURCE < 1
 #undef _POSIX_C_SOURCE
-#define _POSIX_C_SOURCE __PLIBC_POSIX_MAX
+#define _POSIX_C_SOURCE 1
 #endif
-
-#endif /* defined(_DEFAULT_SOURCE) */
+#endif /* defined(_DEFAULT_SOURCE) || defined(_PROXIMA_SOURCE) */
 
 #if defined(_POSIX_C_SOURCE) && !defined(_POSIX_SOURCE)
 #define _POSIX_SOURCE 1

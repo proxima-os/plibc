@@ -23,6 +23,7 @@ libc_sources += files(
     'rand_state.c',
     'rand.c',
     'realloc.c',
+    'realpath.c',
     'srand.c',
     'strtod.c',
     'strtol.c',

@@ -15,7 +15,7 @@ void stub(const char *file, int line, const char *func) {
     abort();
 }
 
-__attribute__((constructor(100))) static void init_library(int argc, char **argv, char **envp) {
+void __plibc_init(int argc, char *argv[], char *envp[]) {
     environ = envp;
     auxv_data = (uintptr_t *)envp;
     while (*auxv_data++);
@@ -34,18 +34,10 @@ __attribute__((constructor(100))) static void init_library(int argc, char **argv
     srand(1);
 }
 
-_Noreturn void __plibc_main(uintptr_t *stack, int (*mainfn)(int, char **, char **), void (*exitfn)(void)) {
+_Noreturn void __plibc_main(uintptr_t *stack, int (*mainfn)(int, char **, char **)) {
     int argc = stack[0];
     char **argv = (char **)&stack[1];
     char **envp = &argv[argc + 1]; // +1 because of null terminator
-
-    if (exitfn) {
-        if (atexit(exitfn)) {
-            perror("plibc: failed to register exit function");
-            fflush(stderr);
-            abort();
-        }
-    }
 
     exit(mainfn(argc, argv, envp));
 }

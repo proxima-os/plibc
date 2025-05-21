@@ -2,6 +2,7 @@ subdir('assert')
 subdir('ctype')
 subdir('cxa')
 subdir('dirent')
+subdir('dlfcn')
 subdir('errno')
 subdir('fcntl')
 subdir('grp')
@@ -24,6 +25,8 @@ libc_sources += files(
     'config-file.c',
     'start.c',
 )
+
+libc_shared_sources += files('shared-start.c')
 
 libc_common = static_library(
     'c-common',

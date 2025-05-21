@@ -52,6 +52,13 @@ int creat(const char *__path, __mode_t __mode);
 int fcntl(int __fildes, int __cmd, ...);
 int open(const char *__path, int __oflag, ...);
 
+#ifdef _PROXIMA_SOURCE
+#define O_CLOFORK __O_CLOFORK
+#define O_DIRECTORY __O_DIRECTORY
+#define O_NOFOLLOW __O_NOFOLLOW
+#define O_CLOEXEC __O_CLOEXEC
+#endif /* defined(_PROXIMA_SOURCE) */
+
 #ifdef __cplusplus
 };
 #endif

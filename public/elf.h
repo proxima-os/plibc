@@ -38,6 +38,21 @@ typedef struct {
     Elf64_Half e_shstrndx;
 } Elf64_Ehdr;
 
+#define ET_DYN 3
+
+#define EM_X86_64 62
+
+#define EV_CURRENT 1
+
+#define ELFMAG0 0x7f
+#define ELFMAG1 'E'
+#define ELFMAG2 'L'
+#define ELFMAG3 'F'
+
+#define ELFCLASS64 2
+
+#define ELFDATA2LSB 1
+
 #define SHN_UNDEF 0
 
 typedef struct {
@@ -57,6 +72,11 @@ typedef struct {
 
 #define ELF64_ST_BIND(i) ((i) >> 4)
 #define ELF64_ST_TYPE(i) ((i) & 0xf)
+
+typedef struct {
+    Elf64_Addr r_offset;
+    Elf64_Xword r_info;
+} Elf64_Rel;
 
 typedef struct {
     Elf64_Addr r_offset;
@@ -86,8 +106,13 @@ typedef struct {
     Elf64_Xword p_align;
 } Elf64_Phdr;
 
+#define PT_LOAD 1
 #define PT_DYNAMIC 2
 #define PT_PHDR 6
+
+#define PF_X 0x1
+#define PF_W 0x2
+#define PF_R 0x4
 
 typedef struct {
     Elf64_Sxword d_tag;
@@ -112,7 +137,7 @@ typedef struct {
 #define DT_INIT 12
 #define DT_FINI 13
 #define DT_SONAME 14
-/* DT_RPATH */
+#define DT_RPATH 15
 #define DT_SYMBOLIC 16
 #define DT_REL 17
 #define DT_RELSZ 18
@@ -126,13 +151,13 @@ typedef struct {
 #define DT_FINI_ARRAY 26
 #define DT_INIT_ARRAYSZ 27
 #define DT_FINI_ARRAYSZ 28
-/* DT_RUNPATH */
+#define DT_RUNPATH 29
 #define DT_FLAGS 30
 #define DT_PREINIT_ARRAY 32
 #define DT_PREINIT_ARRAYSZ 33
 /* DT_SYMTAB_SHNDX */
 
-/* DF_ORIGIN */
+#define DF_ORIGIN 0x1
 #define DF_SYMBOLIC 0x2
 #define DF_TEXTREL 0x4
 #define DF_BIND_NOW 0x8

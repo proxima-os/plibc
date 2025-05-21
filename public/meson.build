@@ -16,6 +16,7 @@ install_headers(
     'assert.h',
     'ctype.h',
     'dirent.h',
+    'dlfcn.h',
     'elf.h',
     'errno.h',
     'fcntl.h',

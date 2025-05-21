@@ -4,7 +4,6 @@ executable(
     dependencies: hydrogen,
     include_directories: inc,
     install: true,
-    link_args: ['-Wl,--no-dynamic-linker,-z,text'],
-    link_whole: libc_static,
+    link_with: libc_shared,
     objects: crt1,
 )

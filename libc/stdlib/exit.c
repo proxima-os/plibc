@@ -8,7 +8,7 @@
 
 EXPORT void exit(int status) {
     __cxa_finalize(NULL);
-    __plibc_rtld_run_fini();
+    run_fini_functions();
     fflush(NULL);
     _exit(status);
 }

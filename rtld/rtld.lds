@@ -1,6 +1,10 @@
 {
 global:
-    __plibc_rtld_run_fini;
+    __plibc_rtld_run_fini_functions;
+    __plibc_rtld_do_dlclose;
+    __plibc_rtld_do_dlerror;
+    __plibc_rtld_do_dlopen;
+    __plibc_rtld_do_dlsym;
 local:
     *;
 };

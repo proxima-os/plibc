@@ -32,6 +32,10 @@ void *memset(void *__s, int __c, size_t __n);
 char *strerror(int __errnum);
 size_t strlen(const char *__s);
 
+#ifdef _PROXIMA_SOURCE
+char *strdup(const char *__s);
+#endif /* defined(_PROXIMA_SOURCE)*/
+
 #ifdef __PLIBC_BUILDING_PLIBC
 #define memchr __builtin_memchr
 #define memcmp __builtin_memcmp

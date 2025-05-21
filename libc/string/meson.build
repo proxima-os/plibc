@@ -10,6 +10,7 @@ libc_sources += files(
     'strcoll.c',
     'strcpy.c',
     'strcspn.c',
+    'strdup.c',
     'strerror.c',
     'strlen.c',
     'strncat.c',

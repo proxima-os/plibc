@@ -1,4 +1,25 @@
-subdir('start')
+rtld_sources += files(
+    'object.c',
+    'rtld.c',
+)
+
+rtld_start_sources += files(
+    'start.c',
+)
+
+rtld_shared_sources += files(
+    'main.c',
+)
+
+rtld_start = static_library(
+    'rtld-start',
+    build_by_default: false,
+    c_args: ['-ffat-lto-objects', '-ffreestanding', '-fno-stack-protector'],
+    gnu_symbol_visibility: 'hidden',
+    include_directories: inc,
+    pic: true,
+    sources: rtld_start_sources,
+)
 
 script = files('rtld.lds')[0]
 
@@ -15,7 +36,6 @@ rtld_static = static_library(
 
 rtld_shared = shared_library(
     'ld64',
-    'main.c',
     dependencies: hydrogen,
     include_directories: inc,
     install: true,
@@ -25,6 +45,6 @@ rtld_shared = shared_library(
     link_whole: rtld_static,
     name_prefix: '',
     objects: crt1,
-    sources: libc_static_sources,
+    sources: libc_static_sources + rtld_shared_sources,
     soversion: 1,
 )

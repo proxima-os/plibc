@@ -3,9 +3,9 @@
 
 #include <bits/NULL.h>
 #include <bits/features.h>
+#include <bits/seek.h> /* IWYU pragma: export */
 #include <bits/size_t.h>
 #include <bits/types.h>
-#include <bits/seek.h> /* IWYU pragma: export */
 
 #ifdef __cplusplus
 extern "C" {
@@ -124,6 +124,35 @@ FILE *fdopen(int __fildes, const char *__type);
 int fileno(FILE *__stream);
 
 #endif /* _POSIX_C_SOURCE >= 1 */
+
+#ifdef _PROXIMA_SOURCE
+
+__attribute__((__format__(__printf__, 3, 0))) int vsnprintf(
+        char *__restrict __s,
+        size_t __n,
+        const char *__restrict __format,
+        __va_list arg
+);
+__attribute__((__format__(__printf__, 3, 4))) int snprintf(
+        char *__restrict __s,
+        size_t __n,
+        const char *__restrict __format,
+        ...
+);
+
+__attribute__((__format__(__scanf__, 2, 0))) int vfscanf(
+        FILE *__restrict __stream,
+        const char *__restrict __format,
+        __va_list __arg
+);
+__attribute__((__format__(__scanf__, 1, 0))) int vscanf(const char *__restrict __format, __va_list arg);
+__attribute__((__format__(__scanf__, 2, 0))) int vsscanf(
+        const char *__restrict __s,
+        const char *__restrict __format,
+        __va_list arg
+);
+
+#endif /* defined(_PROXIMA_SOURCE) */
 
 #ifdef __cplusplus
 };
