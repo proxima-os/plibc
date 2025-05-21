@@ -46,5 +46,3 @@ libc_shared = shared_library(
     link_with: rtld_shared,
     sources: libc_shared_sources,
 )
-
-subdir('test-init')
