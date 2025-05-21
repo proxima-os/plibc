@@ -16,7 +16,7 @@ int config_file_prepare(config_file_t *file) {
 
     if (file->data) return 0;
 
-    int fd = open(file->path, O_RDONLY | __O_CLOEXEC | __O_CLOFORK);
+    int fd = open(file->path, O_RDONLY | O_CLOEXEC | O_CLOFORK);
 
     if (unlikely(fd < 0)) {
         file->error = errno;
@@ -55,6 +55,7 @@ int config_file_prepare(config_file_t *file) {
         file->data = ret.pointer;
     } else {
         file->data = (void *)_Alignof(max_align_t);
+        close(fd);
     }
 
     file->size = info.size;

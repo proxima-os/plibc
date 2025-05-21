@@ -45,7 +45,7 @@ EXPORT int fcntl(int fildes, int cmd, ...) {
         if (likely(ret.error == 0)) {
             ret.integer = 0;
 
-            // if ((flags & HYDROGEN_HANDLE_CLONE_KEEP) == 0) ret.integer |= FD_CLOFORK; // TODO
+            if ((flags & HYDROGEN_HANDLE_CLONE_KEEP) == 0) ret.integer |= FD_CLOFORK;
             if ((flags & HYDROGEN_HANDLE_EXEC_KEEP) == 0) ret.integer |= FD_CLOEXEC;
         }
 
@@ -57,7 +57,7 @@ EXPORT int fcntl(int fildes, int cmd, ...) {
         int orig_flags = va_arg(args, int);
         uint32_t flags = 0;
 
-        /*if ((orig_flags & FD_CLOFORK) == 0)*/ flags |= HYDROGEN_HANDLE_CLONE_KEEP; // TODO
+        if ((orig_flags & FD_CLOFORK) == 0) flags |= HYDROGEN_HANDLE_CLONE_KEEP;
         if ((orig_flags & FD_CLOEXEC) == 0) flags |= HYDROGEN_HANDLE_EXEC_KEEP;
 
         ret = hydrogen_namespace_add(HYDROGEN_THIS_NAMESPACE, fildes, HYDROGEN_THIS_NAMESPACE, fildes, -1, flags);

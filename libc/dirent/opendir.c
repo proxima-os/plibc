@@ -9,7 +9,7 @@
 #define INIT_BUFFER_SIZE 1024
 
 EXPORT DIR *opendir(const char *dirname) {
-    int fd = open(dirname, O_RDONLY | __O_DIRECTORY | __O_CLOEXEC);
+    int fd = open(dirname, O_RDONLY | O_DIRECTORY | O_CLOEXEC);
     if (unlikely(fd < 0)) return NULL;
 
     DIR *dir = calloc(1, sizeof(*dir));

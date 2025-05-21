@@ -2,6 +2,8 @@
 #include "stdio.h"
 #include "stdio.p.h"
 #include <fcntl.h>
+#include <hydrogen/handle.h>
+#include <hydrogen/types.h>
 #include <stdlib.h>
 
 EXPORT FILE *fdopen(int fildes, const char *type) {
@@ -16,12 +18,19 @@ EXPORT FILE *fdopen(int fildes, const char *type) {
         return NULL;
     }
 
-    if (flags & __O_CLOEXEC) {
-        int fdfl = fcntl(fildes, F_GETFD);
-        if (fdfl == -1 || (!(fdfl & FD_CLOEXEC) && fcntl(fildes, F_SETFD, fdfl | FD_CLOEXEC) == -1)) {
-            int orig_errno = errno;
+    if (flags & O_CLOEXEC) {
+        hydrogen_ret_t ret = hydrogen_namespace_add(
+                HYDROGEN_THIS_NAMESPACE,
+                fildes,
+                HYDROGEN_THIS_NAMESPACE,
+                fildes,
+                -1,
+                HYDROGEN_REMOVE_HANDLE_FLAGS | HYDROGEN_HANDLE_EXEC_KEEP
+        );
+
+        if (unlikely(ret.error)) {
             do_close(file, false);
-            errno = orig_errno;
+            errno = ret.error;
             return NULL;
         }
     }
