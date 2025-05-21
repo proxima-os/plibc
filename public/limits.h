@@ -2,6 +2,7 @@
 #define _LIMITS_H 1
 
 #include <bits/features.h>
+#include <hydrogen/limits.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,7 +19,7 @@ extern "C" {
 #define NGROUPS_MAX 0x10000
 /* OPEN_MAX can be omitted if indeterminate */
 /* PATH_MAX can be omitted if path-dependent */
-/* PIPE_BUF can be omitted if path-dependent */
+#define PIPE_BUF __PIPE_BUF
 #define SSIZE_MAX LONG_MAX
 /* STREAM_MAX can be omitted if indeterminate */
 /* TZNAME_MAX can be omitted if indeterminate */
