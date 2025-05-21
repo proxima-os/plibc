@@ -12,3 +12,5 @@ rtld_handover:
     jmp *%rdi
     .cfi_endproc
 .size rtld_handover, . - rtld_handover
+
+.section ".note.GNU-stack", "", @progbits

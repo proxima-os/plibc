@@ -5,3 +5,5 @@
 __plibc_start:
     jmp __plibc_main
 .size __plibc_start, . - __plibc_start
+
+.section ".note.GNU-stack", "", @progbits

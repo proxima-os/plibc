@@ -33,3 +33,5 @@ __plibc_start:
     jmp __plibc_main
     .cfi_endproc
 .size __plibc_start, . - __plibc_start
+
+.section ".note.GNU-stack", "", @progbits
