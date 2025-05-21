@@ -1,16 +1,18 @@
-crt1_args = []
+crt_args = []
 
 if get_option('debug')
-    crt1_args += '-g'
+    crt_args += '-g'
 endif
 
-crt1 = custom_target(
-    'crt1',
-    build_by_default: true,
-    command: compiler.cmd_array() + ['@INPUT@', '-o', '@OUTPUT@', '-c'] + crt1_args,
-    input: files('crt1.S'),
-    install: true,
-    install_dir: get_option('libdir'),
-    install_tag: 'runtime',
-    output: 'crt1.o',
-)
+foreach name : ['crt1', 'crti', 'crtn']
+    set_variable(name, custom_target(
+        name,
+        build_by_default: true,
+        command: compiler.cmd_array() + ['@INPUT@', '-o', '@OUTPUT@', '-c'] + crt_args,
+        input: files(name + '.S'),
+        install: true,
+        install_dir: get_option('libdir'),
+        install_tag: 'runtime',
+        output: name + '.o',
+    ))
+endforeach
