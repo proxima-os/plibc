@@ -63,6 +63,7 @@ size_t wcstombs(char *__restrict __s, const wchar_t *__restrict __pwcs, size_t _
 
 #ifdef _PROXIMA_SOURCE
 char *realpath(const char *__restrict __path, char *__restrict __resolved_path);
+void *aligned_alloc(size_t alignment, size_t size);
 #endif /* defined(_PROXIMA_SOURCE)*/
 
 #ifdef __PLIBC_BUILDING_PLIBC

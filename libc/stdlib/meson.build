@@ -1,6 +1,7 @@
 libc_sources += files(
     'abort.c',
     'abs.c',
+    'aligned_alloc.c',
     'alloc_free.c',
     'atexit.c',
     'atof.c',
