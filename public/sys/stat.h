@@ -66,6 +66,17 @@ int mkfifo(const char *__path, __mode_t __mode);
 int stat(const char *__restrict __path, struct stat *__restrict __buf);
 __mode_t umask(__mode_t __cmask);
 
+#ifdef _PROXIMA_SOURCE
+#define S_ISVTX __S_ISVTX
+#define S_IFMT __S_IFMT
+#define S_IFIFO __S_IFIFO
+#define S_IFCHR __S_IFCHR
+#define S_IFDIR __S_IFDIR
+#define S_IFBLK __S_IFBLK
+#define S_IFREG __S_IFREG
+#define S_IFLNK __S_IFLNK
+#endif /* defined(_PROXIMA_SOURCE) */
+
 #ifdef __cplusplus
 };
 #endif
