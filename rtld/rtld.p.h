@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdarg.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -15,6 +16,12 @@
 
 extern int rtld_last_error;
 
+typedef struct tcb {
+    struct tcb *self;
+    size_t dtv_size;
+    void **dtv;
+} tcb_t;
+
 _Noreturn static inline void rtld_fatal(void) {
     fflush(stderr);
     abort();
@@ -27,3 +34,8 @@ __attribute__((format(printf, 1, 2))) _Noreturn static inline void panic(const c
     va_end(args);
     rtld_fatal();
 }
+
+void arch_rtld_set_tcb(tcb_t *tcb) asm("__plibc_rtld_set_tcb");
+tcb_t *arch_rtld_get_tcb(void) asm("__plibc_rtld_get_tcb");
+
+uintptr_t tls_static_module(void) asm("__plibc_rtld_tls_self_module");

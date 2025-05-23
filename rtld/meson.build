@@ -1,15 +1,11 @@
 rtld_sources += files(
     'object.c',
     'rtld.c',
+    'tls.c',
 )
 
-rtld_start_sources += files(
-    'start.c',
-)
-
-rtld_shared_sources += files(
-    'main.c',
-)
+rtld_start_sources += files('start.c')
+rtld_shared_sources += files('main.c')
 
 rtld_start = static_library(
     'rtld-start',
@@ -23,7 +19,7 @@ rtld_start = static_library(
 
 script = files('rtld.lds')[0]
 
-rtld_static = static_library(
+rtld_common = static_library(
     'rtld',
     build_by_default: false,
     c_args: ['-ffat-lto-objects'],
@@ -42,7 +38,7 @@ rtld_shared = shared_library(
     link_args: ['-Wl,--version-script=' + script.full_path(), '-Wl,-z,text'],
     link_depends: script,
     link_with: libc_common,
-    link_whole: rtld_static,
+    link_whole: rtld_common,
     name_prefix: '',
     objects: crt1,
     sources: libc_static_sources + rtld_shared_sources,

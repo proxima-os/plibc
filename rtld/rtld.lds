@@ -5,6 +5,7 @@ global:
     __plibc_rtld_do_dlerror;
     __plibc_rtld_do_dlopen;
     __plibc_rtld_do_dlsym;
+    __plibc_rtld_do_tls_get_addr;
 local:
     *;
 };

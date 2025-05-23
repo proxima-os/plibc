@@ -86,6 +86,12 @@ typedef struct object {
     init_array_t preinit_array;
     size_t unterminated_dependents;
     size_t search_id;
+    const void *tls_init_image;
+    size_t tls_init_image_size;
+    size_t tls_size;
+    size_t tls_align;
+    size_t tls_module;
+    uintptr_t tls_offset;
     bool have_file_id : 1;
     bool phdrs_heap;
     bool symbolic : 1;
@@ -123,6 +129,7 @@ __attribute__((visibility("hidden"))) extern object_t *root_object asm("__plibc_
 __attribute__((visibility("hidden"))) extern int rtld_argc asm("__plibc_rtld_argc");
 __attribute__((visibility("hidden"))) extern char **rtld_argv asm("__plibc_rtld_argv");
 __attribute__((visibility("hidden"))) extern char **rtld_envp asm("__plibc_rtld_envp");
+__attribute__((visibility("hidden"))) extern void *rtld_tls_area asm("__plibc_rtld_tls_area");
 
 void rtld_init_paths(void) asm("__plibc_rtld_init_paths");
 
@@ -153,6 +160,8 @@ object_t *resolve_object(
         size_t nrunpath
 ) asm("__plibc_rtld_resolve_object");
 void *obj_resolve(object_t *src, const char *name) __asm__("__plibc_rtld_resolve_symbol");
+
+object_t *get_tls_object(size_t module) asm("__plibc_rtld_get_tls_object");
 
 void obj_ref(object_t *obj) asm("__plibc_rtld_obj_ref");
 void obj_deref(object_t *obj) asm("__plibc_rtld_obj_deref");

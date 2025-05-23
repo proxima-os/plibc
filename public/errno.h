@@ -10,7 +10,7 @@ extern "C" {
 
 #define errno errno
 
-extern int errno;
+extern __thread int errno;
 
 #define EDOM __EDOM
 #define ERANGE __ERANGE

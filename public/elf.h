@@ -93,6 +93,9 @@ typedef struct {
 #define R_X86_64_GLOB_DAT 6
 #define R_X86_64_JUMP_SLOT 7
 #define R_X86_64_RELATIVE 8
+#define R_X86_64_DTPMOD64 16
+#define R_X86_64_DTPOFF64 17
+#define R_X86_64_TPOFF64 18
 #define R_X86_64_IRELATIVE 37
 
 typedef struct {
@@ -108,7 +111,9 @@ typedef struct {
 
 #define PT_LOAD 1
 #define PT_DYNAMIC 2
+#define PT_INTERP 3
 #define PT_PHDR 6
+#define PT_TLS 7
 
 #define PF_X 0x1
 #define PF_W 0x2
@@ -161,7 +166,7 @@ typedef struct {
 #define DF_SYMBOLIC 0x2
 #define DF_TEXTREL 0x4
 #define DF_BIND_NOW 0x8
-/* DF_STATIC_TLS */
+#define DF_STATIC_TLS 0x10
 
 #ifdef __cplusplus
 };

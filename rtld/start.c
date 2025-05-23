@@ -4,11 +4,13 @@
 #include "elf.p.h"
 #include "object.h"
 #include "rtld.p.h"
+#include "sys/types.h"
 #include <dlfcn.h>
 #include <elf.h>
 #include <fcntl.h>
 #include <hydrogen/filesystem.h>
 #include <hydrogen/handle.h>
+#include <hydrogen/memory.h>
 #include <hydrogen/types.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -52,9 +54,16 @@ typedef struct {
     rels_t rel, rela, jmprel;
     initfn_t init, fini;
     iarr_t piarr, iarr, farr;
+    const void *tls_init_image;
+    size_t tls_init_image_size;
+    size_t tls_size;
+    size_t tls_align;
+    ssize_t tls_index;
+    uintptr_t tls_offset;
     bool have_dep : 1;
     bool symbolic : 1;
     bool bind_now : 1;
+    bool tls_static : 1;
 } start_object_t;
 
 #define MAX_OBJ 2
@@ -63,10 +72,12 @@ static start_object_t objects[MAX_OBJ];
 static start_object_t *dgraph[MAX_OBJ];
 static size_t ndgraph;
 static size_t num_objects;
+static uintptr_t next_tls_offset;
+static size_t tls_align;
 
 #define PHASE_REGULAR 0
 #define PHASE_COPY 1
-#define PHASE_BIND 2
+#define PHASE_BIND 3
 #define NPHASE 3
 
 static int phase_mask = (1 << PHASE_REGULAR) | (1 << PHASE_COPY);
@@ -267,10 +278,18 @@ static void do_reloc(start_object_t *obj, const elf_rel_t *rel, int phase, bool 
     case R_GLOB_DAT: {
         const elf_sym_t *sym = get_symbol(obj, ELF_R_SYM(rel->r_info));
         resolve_symbol(&obj, &sym);
-        *(uint64_t *)ptr = (uintptr_t)sym_to_ptr(obj, sym);
+        *(uintptr_t *)ptr = (uintptr_t)sym_to_ptr(obj, sym);
         break;
     }
     case R_RELATIVE: *(uintptr_t *)ptr = ADDEND(uintptr_t) + obj->slide; break;
+    case R_DTPMOD: *(uintptr_t *)ptr = subject_phdrs ? 0 : 1; break;
+    case R_DTPOFF:
+    case R_TPOFF: {
+        const elf_sym_t *sym = get_symbol(obj, ELF_R_SYM(rel->r_info));
+        resolve_symbol(&obj, &sym);
+        *(uintptr_t *)ptr = obj->tls_offset + sym->st_value;
+        break;
+    }
     default: rtld_start_fatal(); break; // unknown relocation type
     }
 
@@ -309,6 +328,16 @@ static start_object_t *setup_from_dynamic(
 
     obj->slide = slide;
     obj->dynamic = dynamic;
+
+    for (size_t i = 0; i < phdrs_count; i++) {
+        const elf_phdr_t *phdr = phdrs + i * phdr_entry_size;
+        if (phdr->p_type != PT_TLS) continue;
+
+        obj->tls_init_image = (const void *)(phdr->p_vaddr + slide);
+        obj->tls_init_image_size = phdr->p_filesz;
+        obj->tls_size = phdr->p_memsz;
+        obj->tls_align = phdr->p_align;
+    }
 
     uintptr_t soname = 0;
 
@@ -366,6 +395,15 @@ static start_object_t *setup_from_dynamic(
     obj->phdrs = phdrs;
     obj->phdr_count = phdrs_count;
     obj->phdr_entry_size = phdr_entry_size;
+
+    if (obj->tls_size != 0) {
+        if (obj->tls_align != 0 && (obj->tls_align & (obj->tls_align - 1)) != 0) rtld_start_fatal();
+        if (obj->tls_align > tls_align) tls_align = obj->tls_align;
+
+        uintptr_t off = (next_tls_offset + obj->tls_size + (obj->tls_align - 1)) & ~(obj->tls_align - 1);
+        next_tls_offset = off;
+        obj->tls_offset = -off;
+    }
 
     return obj;
 }
@@ -435,6 +473,45 @@ static void do_initfns(start_object_t *obj) {
     }
 }
 
+#define INIT_DTV_SIZE 2
+
+static void setup_tls(void) {
+    if (tls_align < _Alignof(tcb_t)) tls_align = _Alignof(tcb_t);
+    if (tls_align > hydrogen_page_size) rtld_start_fatal();
+
+    uintptr_t tls_offset = (next_tls_offset + (tls_align - 1)) & ~(tls_align - 1);
+
+    size_t size = tls_offset + sizeof(tcb_t) + sizeof(void *) * INIT_DTV_SIZE;
+    size_t aligned_size = (size + (hydrogen_page_size - 1)) & ~(hydrogen_page_size - 1);
+    hydrogen_ret_t ret = hydrogen_vmm_map(
+            HYDROGEN_THIS_VMM,
+            0,
+            aligned_size,
+            HYDROGEN_MEM_READ | HYDROGEN_MEM_WRITE,
+            HYDROGEN_INVALID_HANDLE,
+            0
+    );
+    if (unlikely(ret.error)) rtld_start_fatal();
+
+    tcb_t *tcb = (tcb_t *)(ret.integer + tls_offset);
+    tcb->self = tcb;
+    tcb->dtv_size = INIT_DTV_SIZE;
+    tcb->dtv = (void **)&tcb[1];
+    arch_rtld_set_tcb(tcb);
+
+    for (size_t i = 0; i < INIT_DTV_SIZE; i++) {
+        tcb->dtv[i] = tcb;
+    }
+
+    for (size_t i = 0; i < num_objects; i++) {
+        start_object_t *obj = &objects[i];
+        if (!obj->tls_init_image_size) continue;
+        memcpy((void *)(tcb + obj->tls_offset), obj->tls_init_image, obj->tls_init_image_size);
+    }
+
+    rtld_tls_area = tcb;
+}
+
 __attribute__((visibility("hidden"))) extern const elf_ehdr_t __ehdr_start;
 
 EXPORT void __plibc_rtld_init(uintptr_t *stack, const elf_dyn_t *dynamic, uintptr_t *got) {
@@ -492,6 +569,8 @@ EXPORT void __plibc_rtld_init(uintptr_t *stack, const elf_dyn_t *dynamic, uintpt
     asm("" ::: "memory");
     // syscalls are now available
 
+    setup_tls();
+
     for (size_t i = ndgraph; i > 0; i--) {
         do_preinitfns(dgraph[i - 1]);
     }
@@ -507,12 +586,32 @@ EXPORT void __plibc_rtld_init(uintptr_t *stack, const elf_dyn_t *dynamic, uintpt
         int flags = RTLD_GLOBAL | RTLD_LAZY | RTLD_INITIALIZED | RTLD_DIAGNOSTICS;
         int fd = HYDROGEN_INVALID_HANDLE;
 
-        if (subject_phdrs == NULL && src == self_obj) {
-            flags |= RTLD_ROOT_OBJECT;
+        if (src == self_obj) {
+            if (subject_phdrs == NULL) {
+                flags |= RTLD_ROOT_OBJECT;
 
-            hydrogen_ret_t ret = hydrogen_fs_fopen(HYDROGEN_INVALID_HANDLE, O_CLOEXEC | O_CLOFORK);
-            if (unlikely(ret.error)) panic("rtld: failed to open executable: %s\n", strerror(ret.error));
-            fd = ret.integer;
+                hydrogen_ret_t ret = hydrogen_fs_fopen(HYDROGEN_INVALID_HANDLE, O_CLOEXEC | O_CLOFORK);
+                if (unlikely(ret.error)) panic("rtld: failed to open executable: %s\n", strerror(ret.error));
+                fd = ret.integer;
+            } else {
+                uintptr_t interp_vaddr = 0;
+                uintptr_t base = 0;
+
+                for (size_t i = 0; i < subject_phnum; i++) {
+                    const elf_phdr_t *phdr = subject_phdrs + i * subject_phent;
+
+                    if (phdr->p_type == PT_INTERP) {
+                        interp_vaddr = phdr->p_vaddr;
+                    } else if (phdr->p_type == PT_PHDR) {
+                        base = (uintptr_t)subject_phdrs - phdr->p_vaddr;
+                    }
+                }
+
+                const char *interp = (const void *)(interp_vaddr + base);
+                hydrogen_ret_t ret = hydrogen_fs_open(HYDROGEN_INVALID_HANDLE, interp, strlen(interp), O_CLOEXEC | O_CLOFORK, 0);
+                if (unlikely(ret.error)) panic("rtld: failed to open interpreter: %s\n", strerror(ret.error));
+                fd = ret.integer;
+            }
         }
 
         obj_init_ctx_t ctx = {};

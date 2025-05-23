@@ -23,6 +23,7 @@ libc_static_sources = []
 rtld_sources = []
 rtld_start_sources = []
 rtld_shared_sources = []
+rtld_static_sources = []
 
 subdir('arch' / host_machine.cpu_family())
 subdir('public')
@@ -33,8 +34,8 @@ libc_static = static_library(
     'c',
     include_directories: inc,
     install: true,
-    link_whole: [libc_common, rtld_static],
-    sources: libc_static_sources,
+    link_whole: [libc_common, rtld_common],
+    sources: libc_static_sources + rtld_static_sources,
 )
 
 libc_shared = shared_library(

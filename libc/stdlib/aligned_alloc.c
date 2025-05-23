@@ -1,8 +1,8 @@
 #include "compiler.h"
-#include "stdlib.p.h"
 #include <errno.h>
 #include <hydrogen/memory.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 EXPORT void *aligned_alloc(size_t alignment, size_t size) {
@@ -13,17 +13,8 @@ EXPORT void *aligned_alloc(size_t alignment, size_t size) {
         return NULL;
     }
 
-    if (unlikely(alignment > hydrogen_page_size)) {
-        errno = EINVAL;
-        return NULL;
-    }
+    if (alignment <= _Alignof(max_align_t)) return malloc(size);
 
-    if (unlikely(size == 0)) return (void *)alignment;
-
-    // for real_size <= hydrogen_page_size, malloc returns a pointer aligned to next_power_of_two(real_size).
-    // for real_size > hydrogen_page_size, malloc returns a pointer aligned to hydrogen_page_size.
-
-    size_t real_size = size + ALLOC_META_OFFSET;
-    if (real_size < alignment) real_size = alignment;
-    return malloc(real_size - ALLOC_META_OFFSET);
+    size = size + (alignment - _Alignof(max_align_t));
+    return (void *)(((uintptr_t)malloc(size) + (alignment - 1)) & ~(alignment - 1));
 }

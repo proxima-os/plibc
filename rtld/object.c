@@ -15,6 +15,7 @@
 #include <hydrogen/memory.h>
 #include <hydrogen/types.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,6 +32,7 @@ object_t *root_object;
 int rtld_argc;
 char **rtld_argv;
 char **rtld_envp;
+void *rtld_tls_area;
 
 static object_t **objects_table;
 static size_t objects_capacity;
@@ -48,6 +50,10 @@ static object_t *global_tail;
 static char **libpath;
 static size_t nlibpath;
 static size_t clibpath;
+
+static size_t root_tls_size;
+static size_t root_tls_align;
+static size_t next_tls_module = 2;
 
 static uint64_t hash_blob(const void *name, size_t len) {
     uint64_t hash = 0xcbf29ce484222325;
@@ -446,6 +452,7 @@ object_t *create_object(
     uintptr_t dynamic_virt = 0;
     uintptr_t virt_head = UINTPTR_MAX;
     uintptr_t virt_tail = 0;
+    uintptr_t tls_virt = 0;
 
     for (size_t i = 0; i < phnum; i++) {
         const elf_phdr_t *phdr = phdrs + i * phent;
@@ -469,6 +476,12 @@ object_t *create_object(
             break;
         case PT_DYNAMIC: dynamic_virt = phdr->p_vaddr; break;
         case PT_PHDR: obj->base = base = (uintptr_t)phdrs - phdr->p_vaddr; break;
+        case PT_TLS:
+            tls_virt = phdr->p_vaddr;
+            obj->tls_init_image_size = phdr->p_filesz;
+            obj->tls_size = phdr->p_memsz;
+            obj->tls_align = phdr->p_align;
+            break;
         }
     }
 
@@ -481,6 +494,7 @@ object_t *create_object(
     }
 
     obj->dynamic = (const void *)(dynamic_virt + obj->base);
+    obj->tls_init_image = (const void *)(tls_virt + obj->base);
 
     size_t rpath_offset = 0, soname_offset = 0, runpath_offset = 0;
 
@@ -645,6 +659,31 @@ object_t *create_object(
         }
 
         cleanup_part_resolve(ctx, runpath, nrunpath, rpath_start);
+    }
+
+    if (obj->tls_size) {
+        if (flags & RTLD_INITIALIZED) {
+            obj->tls_module = subject_phdrs ? 0 : 1;
+        } else if (flags & RTLD_ROOT_OBJECT) {
+            obj->tls_module = 1;
+
+            size_t align = obj->tls_align;
+            if (align == 0) align = 1;
+
+            if (align & (align - 1)) {
+                rtld_last_error = RTLD_INVALID_IMAGE;
+                obj->phdrs = NULL;
+                obj_deref(obj);
+                return NULL;
+            }
+
+            if (obj->tls_align > root_tls_align) root_tls_align = obj->tls_align;
+            root_tls_size = (root_tls_size + obj->tls_size + (obj->tls_align - 1)) & ~(obj->tls_align - 1);
+
+            obj->tls_offset = -root_tls_size;
+        } else {
+            obj->tls_module = next_tls_module++;
+        }
     }
 
     obj->resolved = true;
@@ -847,7 +886,16 @@ static bool do_reloc(object_t *obj, search_list_t *list, const elf_rel_t *rel, b
     case R_IRELATIVE:
         *(uintptr_t *)ptr = (uintptr_t)((void *(*)(void))(obj->base + ADDEND(uintptr_t, ptr, rel, rela)))();
         break;
-    default: panic("rtld: unrecognized relocation type %u\n", type);
+    case R_DTPMOD: *(uintptr_t *)ptr = sym.symbol ? sym.object->tls_module : SIZE_MAX; break;
+    case R_TPOFF:
+        if (sym.symbol != NULL && sym.object->tls_module >= 2) {
+            // Can't use static TLS for this object
+            rtld_last_error = RTLD_INVALID_IMAGE;
+            return false;
+        }
+        // fall through
+    case R_DTPOFF: *(uintptr_t *)ptr = sym.symbol ? sym.object->tls_offset + sym.symbol->st_value : 0; break;
+    default: rtld_last_error = RTLD_INVALID_IMAGE; return false;
     }
 
     return true;
@@ -952,6 +1000,47 @@ static void call_init_functions(object_t *obj) {
     obj->initialized = true;
 }
 
+static tcb_t *allocate_tcb(void) {
+    if (root_tls_align < _Alignof(tcb_t)) root_tls_align = _Alignof(tcb_t);
+
+    size_t tcb_offset = (root_tls_size + (root_tls_align - 1)) & ~(root_tls_align - 1);
+    size_t area_size = (tcb_offset + sizeof(tcb_t) + (root_tls_align - 1)) & ~(root_tls_align - 1);
+    void *area = aligned_alloc(root_tls_align, area_size);
+    if (unlikely(!area)) {
+        rtld_last_error = RTLD_OS(ENOMEM);
+        return NULL;
+    }
+
+    tcb_t *tcb = area + tcb_offset;
+    memset(tcb, 0, sizeof(*tcb));
+    tcb->self = tcb;
+    tcb->dtv_size = 2;
+    tcb->dtv = malloc(sizeof(*tcb->dtv) * tcb->dtv_size);
+    if (unlikely(!tcb->dtv)) {
+        rtld_last_error = RTLD_OS(ENOMEM);
+        return NULL;
+    }
+
+    tcb->dtv[0] = rtld_tls_area;
+    tcb->dtv[1] = tcb;
+
+    for (object_t *obj = object_list; obj != NULL; obj = obj->next) {
+        if (!obj->tls_size) continue;
+        if (obj->tls_module != 1) continue;
+
+        memcpy((void *)tcb + obj->tls_offset, obj->tls_init_image, obj->tls_init_image_size);
+        memset((void *)tcb + obj->tls_offset + obj->tls_init_image_size, 0, obj->tls_size - obj->tls_init_image_size);
+    }
+
+    return tcb;
+}
+
+static void transition_tls(void) {
+    tcb_t *tcb = allocate_tcb();
+    if (unlikely(!tcb)) panic("rtld: failed to allocate initial tcb: %s\n", dlerror());
+    arch_rtld_set_tcb(tcb);
+}
+
 bool obj_init_finalize(object_t *root, int flags) {
     size_t id = next_search_id++;
 
@@ -1028,6 +1117,8 @@ bool obj_init_finalize(object_t *root, int flags) {
             cur->textrel = false;
         }
     }
+
+    if ((flags & RTLD_ROOT_OBJECT) != 0 && subject_phdrs != NULL) transition_tls();
 
     call_init_functions(root);
     return true;
@@ -1423,6 +1514,16 @@ done:
     return (void *)get_symbol_address(&symbol);
 }
 
+object_t *get_tls_object(size_t module) {
+    for (object_t *cur = object_list; cur != NULL; cur = cur->next) {
+        if (cur->tls_module == module) {
+            return cur;
+        }
+    }
+
+    return NULL;
+}
+
 void obj_ref(object_t *obj) {
     obj->references += 1;
     __atomic_fetch_add(&obj->references, 1, __ATOMIC_ACQUIRE);
@@ -1446,6 +1547,8 @@ void obj_deref(object_t *obj) {
         remove_object(obj);
 
         if (obj->phdrs_heap) free((void *)obj->phdrs);
+
+        // TODO: Free TLS areas
 
         free(obj->path);
         free(obj->dependencies);

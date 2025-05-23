@@ -36,6 +36,9 @@ static const unsigned char elf_native_ident[] =
 #define SELECT_RELOC3(arch, name) R_##arch##_##name
 #define SELECT_RELOC2(arch, name) SELECT_RELOC3(arch, name)
 #define SELECT_RELOC(name) SELECT_RELOC2(R_ARCH_NAME, name)
+#define SELECT_WRELOC3(width, ...) SELECT_RELOC(__VA_ARGS__##width)
+#define SELECT_WRELOC2(width, ...) SELECT_WRELOC3(width, ##__VA_ARGS__)
+#define SELECT_WRELOC(...) SELECT_WRELOC2(ELF_WIDTH, ##__VA_ARGS__)
 
 #define R_NONE SELECT_RELOC(NONE)
 #define R_POINTER SELECT_RELOC(ELF_WIDTH)
@@ -43,4 +46,7 @@ static const unsigned char elf_native_ident[] =
 #define R_GLOB_DAT SELECT_RELOC(GLOB_DAT)
 #define R_JUMP_SLOT SELECT_RELOC(JUMP_SLOT)
 #define R_RELATIVE SELECT_RELOC(RELATIVE)
+#define R_DTPMOD SELECT_WRELOC(DTPMOD)
+#define R_DTPOFF SELECT_WRELOC(DTPOFF)
+#define R_TPOFF SELECT_WRELOC(TPOFF)
 #define R_IRELATIVE SELECT_RELOC(IRELATIVE)
